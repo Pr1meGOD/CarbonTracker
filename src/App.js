@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './HomePage';
+import AuthenticationPage from './AuthenticationPage';
+import ContactUs from './ContactUs';
+import CarbonReductionTips from './CarbonReductionTips';
+import GlobalCarbonImpact from './GlobalCarbonImpact';
+import AccurateTrackingV3 from './AccurateTrackingV3';
+import AboutUs from './AboutUs';
+import ChatPage from './ChatPage';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/auth" element={<AuthenticationPage />} />
+        <Route path="/contact_us" element={<ContactUs/>}/>
+        <Route path="/carbonReductionTips" element={<CarbonReductionTips/>}/>
+        <Route path="/globalCarbonImpact" element={<GlobalCarbonImpact/>}/>
+        <Route path="/aboutUs" element={<AboutUs/>}/>
+        <Route path="/accurateTrackingV3" element={<AccurateTrackingV3/>}/>
+        <Route path="/chat" element={<ChatPage />} />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
