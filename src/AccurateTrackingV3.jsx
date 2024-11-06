@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, Home, Car, Bike, ShoppingBag, Plane, BarChart2, PieChart, ArrowRight } from 'lucide-react';
+import { Leaf, Home, Car, Bike, ShoppingBag, Plane, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import bg from "./assets/Images/home_page_bg.jpg";
@@ -102,9 +102,7 @@ const AccurateTrackingV3 = () => {
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  className={`flex items-center px-4 py-2 mr-4 rounded-full ${
-                    activeCategory === category.id ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'
-                  }`}
+                  className={`flex items-center px-4 py-2 mr-4 rounded-full ${activeCategory === category.id ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}
                   onClick={() => setActiveCategory(category.id)}
                 >
                   {category.icon}
@@ -145,7 +143,7 @@ const AccurateTrackingV3 = () => {
                 </>
               )}
 
-              {activeCategory === 'car' && (
+{activeCategory === 'car' && (
                 <>
                   <div>
                     <label htmlFor="carMileage" className="block text-sm font-medium text-black">
@@ -210,10 +208,7 @@ const AccurateTrackingV3 = () => {
                     />
                   </div>
                 </>
-                
               )}
-
-              {/* Other categories (food, flight) remain unchanged */}
 
               <div className="flex justify-end">
                 <button
