@@ -29,7 +29,7 @@ const AccurateTrackingV3 = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send form data to the correct backend API for bike emissions calculation
+      // Send form data to the correct backend API
       const response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
         cc: formData.bikeCC,
         monthlyMileage: formData.bikeMileage,
@@ -38,6 +38,8 @@ const AccurateTrackingV3 = () => {
         electricityUsage: formData.electricity,
         heatingUsage: formData.heating,
       });
+  
+      console.log("API Response:", response.data);  // Log the API response
   
       // Set the result data from the API response
       setResult(response.data);
