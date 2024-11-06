@@ -33,18 +33,46 @@ function getBadge(emission) {
     return 'F';
 }
 
-// Endpoint to calculate emissions
-app.post('/api/calculateEmission', (req, res) => {
-    const { cc, monthlyMileage, carMileage, fuelType, electricityUsage, heatingUsage } = req.body;
+// Endpoint to calculate bike emissions
+app.post('/api/calculateBikeEmission', (req, res) => {
+    const { cc, monthlyMileage } = req.body;
+
+    if (!cc || !monthlyMileage) {
+        return res.status(400).json({ error: 'Bike cc and monthly mileage are required' });
+    }
 
     const bikeEmission = calculateBikeEmission(cc, monthlyMileage);
+    const badge = getBadge(bikeEmission);
+
+    res.json({ bikeEmission, badge });
+});
+
+// Endpoint to calculate car emissions
+app.post('/api/calculateCarEmission', (req, res) => {
+    const { carMileage, fuelType } = req.body;
+
+    if (!carMileage || !fuelType) {
+        return res.status(400).json({ error: 'Car mileage and fuel type are required' });
+    }
+
     const carEmission = calculateCarEmission(carMileage, fuelType);
+    const badge = getBadge(carEmission);
+
+    res.json({ carEmission, badge });
+});
+
+// Endpoint to calculate home emissions
+app.post('/api/calculateHomeEmission', (req, res) => {
+    const { electricityUsage, heatingUsage } = req.body;
+
+    if (!electricityUsage || !heatingUsage) {
+        return res.status(400).json({ error: 'Electricity and heating usage are required' });
+    }
+
     const homeEmission = calculateHouseEmission(electricityUsage, heatingUsage);
+    const badge = getBadge(homeEmission);
 
-    const totalEmission = bikeEmission + carEmission + homeEmission;
-    const badge = getBadge(totalEmission);
-
-    res.json({ bikeEmission, carEmission, homeEmission, totalEmission, badge });
+    res.json({ homeEmission, badge });
 });
 
 // Start the server
