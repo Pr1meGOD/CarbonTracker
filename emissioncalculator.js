@@ -1,5 +1,9 @@
 const express = require('express');
-const router = express.Router();
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware to parse JSON bodies
+app.use(express.json());
 
 // Function to calculate emissions for bike, car, and home
 function calculateBikeEmission(cc, monthlyMileage) {
@@ -30,7 +34,7 @@ function getBadge(emission) {
 }
 
 // Endpoint to calculate emissions
-router.post('/calculateEmission', (req, res) => {
+app.post('/api/calculateEmission', (req, res) => {
     const { cc, monthlyMileage, carMileage, fuelType, electricityUsage, heatingUsage } = req.body;
 
     const bikeEmission = calculateBikeEmission(cc, monthlyMileage);
@@ -43,4 +47,7 @@ router.post('/calculateEmission', (req, res) => {
     res.json({ bikeEmission, carEmission, homeEmission, totalEmission, badge });
 });
 
-module.exports = router;
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
