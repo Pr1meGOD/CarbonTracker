@@ -227,8 +227,8 @@ const AccurateTrackingV3 = () => {
             </form>
 
             {result && (
-              <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
-                <p>Emission Result: {result.emission} kg CO₂</p>
+              <div className="mt-6 p-4 rounded bg-green-100 text-black-800">
+                <p>Emission Result: {result.emission} metric tons CO₂</p>
                 <p>Badge: {result.badge}</p>
               </div>
             )}
