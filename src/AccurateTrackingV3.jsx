@@ -210,6 +210,7 @@ const AccurateTrackingV3 = () => {
                     />
                   </div>
                 </>
+                
               )}
 
               {/* Other categories (food, flight) remain unchanged */}
