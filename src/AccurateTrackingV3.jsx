@@ -38,7 +38,9 @@ const AccurateTrackingV3 = () => {
         electricityUsage: formData.electricity,
         heatingUsage: formData.heating,
       });
-      setResult(response.data);
+      
+      // Set result with the data from the API
+      setResult(response.data); // Assuming the response contains 'emission' and 'badge'
     } catch (error) {
       console.error('Error calculating emission:', error);
     }
@@ -81,7 +83,7 @@ const AccurateTrackingV3 = () => {
                   <Link to="/" className="hover:text-green-400 cursor-pointer">Home</Link>
                 </li>
                 <li>
-                  <Link to = '/AboutUs' className="hover:text-green-400 cursor-pointer">About</Link>
+                  <Link to='/AboutUs' className="hover:text-green-400 cursor-pointer">About</Link>
                 </li>
                 <li>
                   <Link to="/contact_us" className='hover:text-green-400 cursor-pointer'>Contact Us</Link>
@@ -143,7 +145,7 @@ const AccurateTrackingV3 = () => {
                 </>
               )}
 
-{activeCategory === 'car' && (
+              {activeCategory === 'car' && (
                 <>
                   <div>
                     <label htmlFor="carMileage" className="block text-sm font-medium text-black">
