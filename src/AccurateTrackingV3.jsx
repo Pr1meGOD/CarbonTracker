@@ -29,8 +29,8 @@ const AccurateTrackingV3 = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send form data to the backend for calculation
-      const response = await axios.post('/api/calculateEmission', {
+      // Send form data to the correct backend API for bike emissions calculation
+      const response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
         cc: formData.bikeCC,
         monthlyMileage: formData.bikeMileage,
         carMileage: formData.carMileage,
@@ -38,12 +38,13 @@ const AccurateTrackingV3 = () => {
         electricityUsage: formData.electricity,
         heatingUsage: formData.heating,
       });
-      
-      // Set result with the data from the API
-      setResult(response.data); // Assuming the response contains 'emission' and 'badge'
+  
+      // Set the result data from the API response
+      setResult(response.data);
     } catch (error) {
       console.error('Error calculating emission:', error);
     }
+  
     // Reset the form
     setFormData({
       electricity: '',
@@ -56,6 +57,7 @@ const AccurateTrackingV3 = () => {
       flights: '',
     });
   };
+  
 
   const categories = [
     { id: 'home', name: 'Home', icon: <Home className="h-6 w-6" /> },
