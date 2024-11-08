@@ -34,35 +34,34 @@ const AccurateTrackingV3 = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
-      let response;
+        let response;
 
-      // Check if the active category is 'bike' and calculate bike emissions
-      if (activeCategory === 'bike') {
-        response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
-          cc: formData.bikeCC,
-          monthlyMileage: formData.bikeMileage,
-        });
-      } 
-      // Check if the active category is 'car' and calculate car emissions
-      else if (activeCategory === 'car') {
-        response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
-          carMileage: formData.carMileage,
-          carFuelType: formData.carFuelType,
-        });
-      }
+        // Determine active category and send the corresponding request
+        if (activeCategory === 'bike') {
+            response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
+                cc: formData.bikeCC,
+                monthlyMileage: formData.bikeMileage,
+            });
+        } else if (activeCategory === 'car') {
+            response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
+                carMileage: formData.carMileage,
+                carFuelType: formData.carFuelType,
+            });
+        }
 
-      // Store the response data in state based on the active category
-      setResults((prevResults) => ({
-        ...prevResults,
-        [activeCategory]: response.data,
-      }));
+        // Store and display both carEmission and badge
+        setResults((prevResults) => ({
+            ...prevResults,
+            [activeCategory]: response.data,
+        }));
 
     } catch (error) {
-      console.error('Error calculating emission:', error);
+        console.error('Error calculating emission:', error);
     }
 };
+
 
 
   
