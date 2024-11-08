@@ -72,17 +72,21 @@ app.post('/api/calculateBikeEmission', (req, res) => {
 
 // Endpoint to calculate car emissions
 app.post('/api/calculateCarEmission', (req, res) => {
-    const { carMileage, carfuelType } = req.body;
+    const { carMileage, carFuelType } = req.body;  
 
+    
     if (!carMileage || !carFuelType) {
         return res.status(400).json({ error: 'Car mileage and fuel type are required' });
     }
 
-    const carEmission = calculateCarEmission(carMileage, carFuelType);  // Calculate in metric tons
+    
+    const carEmission = calculateCarEmission(carMileage, carFuelType);  
     const badge = getBadge(carEmission);
 
+    
     res.json({ carEmission, badge });
 });
+
 
 // Endpoint to calculate home emissions
 app.post('/api/calculateHomeEmission', (req, res) => {
