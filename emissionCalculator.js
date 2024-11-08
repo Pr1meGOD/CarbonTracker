@@ -42,11 +42,18 @@ function calculateCarEmission(carMileage, carFuelType) {
 
 
 
+// function calculateHouseEmission(electricityUsage, heatingUsage) {
+//     const electricityEmission = electricityUsage * 0.000743;
+//     const heatingEmission = heatingUsage * 0.0053; 
+//     return electricityEmission + heatingEmission;  
+// }
+
 function calculateHouseEmission(electricityUsage, heatingUsage) {
-    const electricityEmission = electricityUsage * 0.000743;
-    const heatingEmission = heatingUsage * 0.0053; 
-    return electricityEmission + heatingEmission;  
+    const electricityEmission = electricityUsage * 0.000743; 
+    const heatingEmission = heatingUsage * 0.0053;  
+    return electricityEmission + heatingEmission;
 }
+
 
 
 function getBadge(emission) {
@@ -88,6 +95,19 @@ app.post('/api/calculateCarEmission', (req, res) => {
 
 
 // Endpoint to calculate home emissions
+// app.post('/api/calculateHomeEmission', (req, res) => {
+//     const { electricityUsage, heatingUsage } = req.body;
+
+//     if (!electricityUsage || !heatingUsage) {
+//         return res.status(400).json({ error: 'Electricity and heating usage are required' });
+//     }
+
+//     const homeEmission = calculateHouseEmission(electricityUsage, heatingUsage);  // Calculate in metric tons
+//     const badge = getBadge(homeEmission);
+
+//     res.json({ homeEmission, badge });
+// });
+
 app.post('/api/calculateHomeEmission', (req, res) => {
     const { electricityUsage, heatingUsage } = req.body;
 
@@ -100,6 +120,7 @@ app.post('/api/calculateHomeEmission', (req, res) => {
 
     res.json({ homeEmission, badge });
 });
+
 
 // Start the server
 app.listen(PORT, () => {
