@@ -276,16 +276,17 @@ const AccurateTrackingV3 = () => {
 
             {results[activeCategory] && (
   <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
+
 <p>
-    Emission Result: {results[activeCategory].bikeEmission 
+    Emission Result: {results[activeCategory] && results[activeCategory].bikeEmission 
         ? `${results[activeCategory].bikeEmission} metric tons CO₂`
-        : results[activeCategory].carEmission 
+        : results[activeCategory] && results[activeCategory].carEmission 
         ? `${results[activeCategory].carEmission} metric tons CO₂`
-        : results[activeCategory].homeEmission 
+        : results[activeCategory] && results[activeCategory].homeEmission 
         ? `${results[activeCategory].homeEmission} metric tons CO₂`
         : 'No data available'}
 </p>
-<p>Badge: {results[activeCategory].badge}</p>
+<p>Badge: {results[activeCategory] && results[activeCategory].badge}</p>
 
   </div>
 )}
