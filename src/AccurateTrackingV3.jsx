@@ -49,6 +49,11 @@ const AccurateTrackingV3 = () => {
                 carMileage: formData.carMileage,
                 carFuelType: formData.carFuelType,
             });
+        } else if (activeCategory === 'household') {
+            response = await axios.post('http://localhost:5000/api/calculateHomeEmission', {
+                electricityUsage: formData.electricityUsage,
+                heatingUsage: formData.heatingUsage,
+            });
         }
 
         // Store and display both carEmission and badge
@@ -63,8 +68,6 @@ const AccurateTrackingV3 = () => {
 };
 
 
-
-  
 
   const categories = [
     { id: 'home', name: 'Home', icon: <Home className="h-6 w-6" /> },
