@@ -34,8 +34,7 @@ const AccurateTrackingV3 = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Car Mileage:", formData.carMileage);
-    console.log("Car Fuel Type:", formData.carFuelType);
+  
   
     try {
       let response;
