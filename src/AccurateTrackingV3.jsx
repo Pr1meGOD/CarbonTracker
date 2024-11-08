@@ -141,22 +141,26 @@ const AccurateTrackingV3 = () => {
           Monthly Electricity Usage (kWh)
         </label>
         <input
-  type="number"
-  id="electricityUsage"
-  name="electricity"  // Changed from "electricityUsage"
-  value={formData.electricity || ""}
-  onChange={handleInputChange}
-  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-/>
-<input
-  type="number"
-  id="heatingUsage"
-  name="heating"  // Changed from "heatingUsage"
-  value={formData.heating || ""}
-  onChange={handleInputChange}
-  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-/>
-
+          type="number"
+          id="electricityUsage"
+          name="electricityUsage"
+          value={formData.electricityUsage || ""}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+        />
+      </div>
+      <div>
+        <label htmlFor="heatingUsage" className="block text-sm font-medium text-black">
+          Monthly Heating Usage (therms)
+        </label>
+        <input
+          type="number"
+          id="heatingUsage"
+          name="heatingUsage"
+          value={formData.heatingUsage || ""}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+        />
       </div>
     </>
   )}
