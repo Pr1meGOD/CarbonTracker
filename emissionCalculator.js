@@ -41,12 +41,12 @@ function calculateCarEmission(carMileage, carFuelType) {
 }
 
 
-
-function calculateHouseEmission(electricityUsage, heatingUsage) {
+function calculateHomeEmission(electricityUsage, heatingUsage) {
     const electricityEmission = electricityUsage * 0.000743; // Emission factor for electricity (kWh)
     const heatingEmission = heatingUsage * 0.0053;  // Emission factor for heating (therms)
     return electricityEmission + heatingEmission;
 }
+
 
 
 
@@ -95,11 +95,12 @@ app.post('/api/calculateHomeEmission', (req, res) => {
         return res.status(400).json({ error: 'Electricity and heating usage are required' });
     }
 
-    const homeEmission = calculateHouseEmission(electricityUsage, heatingUsage);  // Calculate in metric tons
+    const homeEmission = calculateHomeEmission(electricityUsage, heatingUsage);  // Calculate in metric tons
     const badge = getBadge(homeEmission);
 
     res.json({ homeEmission, badge });
 });
+
 
 
 

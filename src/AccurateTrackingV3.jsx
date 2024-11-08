@@ -40,6 +40,7 @@ const AccurateTrackingV3 = () => {
           try {
               let response;
       
+              // Determine active category and send the corresponding request
               if (activeCategory === 'bike') {
                   response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
                       cc: formData.bikeCC,
@@ -50,7 +51,7 @@ const AccurateTrackingV3 = () => {
                       carMileage: formData.carMileage,
                       carFuelType: formData.carFuelType,
                   });
-              } else if (activeCategory === 'household') {
+              } else if (activeCategory === 'home') {
                   response = await axios.post('http://localhost:5000/api/calculateHomeEmission', {
                       electricityUsage: formData.electricityUsage,
                       heatingUsage: formData.heatingUsage,
@@ -67,6 +68,7 @@ const AccurateTrackingV3 = () => {
               console.error('Error calculating emission:', error);
           }
       };
+      
       
 
 
@@ -128,7 +130,8 @@ const AccurateTrackingV3 = () => {
             </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1">
-      {activeCategory === 'household' && (
+
+      {activeCategory === 'home' && (
     <>
         <div>
             <label htmlFor="electricityUsage" className="block text-sm font-medium text-black">
@@ -158,6 +161,7 @@ const AccurateTrackingV3 = () => {
         </div>
     </>
 )}
+
 
 
 {activeCategory === 'car' && (
@@ -256,6 +260,7 @@ const AccurateTrackingV3 = () => {
         : 'No data available'}
 </p>
 <p>Badge: {results[activeCategory] && results[activeCategory].badge}</p>
+
 
   </div>
 )}
