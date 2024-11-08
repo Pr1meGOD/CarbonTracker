@@ -35,6 +35,7 @@ const AccurateTrackingV3 = () => {
       [name]: value,
     }));
   };
+  
 
   const handleRedirectToTips = () => {
     navigate('/CarbonReductionTips');
@@ -55,11 +56,14 @@ const AccurateTrackingV3 = () => {
           carFuelType: formData.carFuelType,
         });
       } else if (activeCategory === 'home') {
+        console.log("Form Data before submission:", formData); 
         response = await axios.post('http://localhost:5000/api/calculateHomeEmission', {
-          electricityUsage: formData.electricity,
-          heatingUsage: formData.heating,
+          electricity: formData.electricity,
+          heating: formData.heating,
         });
       }
+      
+
 
       const { badge } = response.data;
       setResults((prevResults) => ({
@@ -121,51 +125,55 @@ const AccurateTrackingV3 = () => {
           </p>
   
           <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg mx-auto" style={{ width: '80%', maxWidth: '800px' }}>
-            <div className="flex mb-8 overflow-x-auto">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  className={`flex items-center px-4 py-2 mr-4 rounded-full ${activeCategory === category.id ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-                  onClick={() => setActiveCategory(category.id)}
-                >
-                  {category.icon}
-                  <span className="ml-2">{category.name}</span>
-                </button>
-              ))}
-            </div>
+          <div className="flex mb-8 overflow-x-auto">
+  {categories.map((category) => (
+    <button
+      key={category.id}
+      className={`flex items-center px-4 py-2 mr-4 rounded-full ${
+        activeCategory === category.id ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'
+      }`}
+      onClick={() => setActiveCategory(category.id)}
+    >
+      {category.icon}
+      <span className="ml-2">{category.name}</span>
+    </button>
+  ))}
+</div>
+
   
             {/* Form goes here */}
             <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1">
             {activeCategory === 'home' && (
-                <>
-                  <div>
-                    <label htmlFor="electricityUsage" className="block text-sm font-medium text-black">
-                      Monthly Electricity Usage (kWh)
-                    </label>
-                    <input
-                      type="number"
-                      id="electricityUsage"
-                      name="electricityUsage"
-                      value={formData.electricityUsage || ""}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="heatingUsage" className="block text-sm font-medium text-black">
-                      Monthly Heating Usage (therms)
-                    </label>
-                    <input
-                      type="number"
-                      id="heatingUsage"
-                      name="heatingUsage"
-                      value={formData.heatingUsage || ""}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-                    />
-                  </div>
-                </>
-              )}
+  <>
+    <div>
+      <label htmlFor="electricity" className="block text-sm font-medium text-black">
+        Monthly Electricity Usage (kWh)
+      </label>
+      <input
+        type="number"
+        id="electricity"
+        name="electricity"
+        value={formData.electricity || ""}
+        onChange={handleInputChange}
+        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+      />
+    </div>
+    <div>
+      <label htmlFor="heating" className="block text-sm font-medium text-black">
+        Monthly Heating Usage (therms)
+      </label>
+      <input
+        type="number"
+        id="heating"
+        name="heating"
+        value={formData.heating || ""}
+        onChange={handleInputChange}
+        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+      />
+    </div>
+  </>
+)}
+
               {activeCategory === 'car' && (
                 <>
                   <div>
@@ -240,20 +248,23 @@ const AccurateTrackingV3 = () => {
             </form>
   
             {/* Emission result display */}
-            {results[activeCategory] && (
-              <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
-                <p>
-                  Emission Result: {results[activeCategory].bikeEmission
-                    ? `${results[activeCategory].bikeEmission} metric tons CO₂`
-                    : results[activeCategory].carEmission
-                    ? `${results[activeCategory].carEmission} metric tons CO₂`
-                    : results[activeCategory].homeEmission
-                    ? `${results[activeCategory].homeEmission} metric tons CO₂`
-                    : 'No data available'}
-                </p>
-                <p>Badge: {results[activeCategory].badge}</p>
-              </div>
-            )}
+          {/* Emission result display */}
+{results[activeCategory] && (
+  <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
+    <p>
+      Emission Result: 
+      {activeCategory === 'home' && results[activeCategory].homeEmission
+        ? `${results[activeCategory].homeEmission} metric tons CO₂`
+        : activeCategory === 'car' && results[activeCategory].carEmission
+        ? `${results[activeCategory].carEmission} metric tons CO₂`
+        : activeCategory === 'bike' && results[activeCategory].bikeEmission
+        ? `${results[activeCategory].bikeEmission} metric tons CO₂`
+        : 'No data available'}
+    </p>
+    <p>Badge: {results[activeCategory].badge}</p>
+  </div>
+)}
+
             
             {/* Show improvement tip */}
             {showImprovementTip[activeCategory] && (
