@@ -46,8 +46,8 @@ const AccurateTrackingV3 = () => {
         });
       } else if (activeCategory === 'car') {
         response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
-          mileage: formData.carMileage,  // Takes value from car mileage input field
-          fuelType: formData.carFuelType,  // Takes value from car fuel type select field
+          carmileage: formData.carMileage,  // Takes value from car mileage input field
+          carfuelType: formData.carFuelType,  // Takes value from car fuel type select field
         });
       }
   
