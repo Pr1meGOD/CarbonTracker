@@ -127,37 +127,37 @@ const AccurateTrackingV3 = () => {
               ))}
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1">
-              {activeCategory === 'home' && (
-                <>
-                  <div>
-                    <label htmlFor="electricity" className="block text-sm font-medium text-gray-700">
-                      Monthly Electricity Usage (kWh)
-                    </label>
-                    <input
-                      type="number"
-                      id="electricity"
-                      name="electricity"
-                      value={formData.electricity}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="heating" className="block text-sm font-medium text-gray-700">
-                      Monthly Heating Usage (therms)
-                    </label>
-                    <input
-                      type="number"
-                      id="heating"
-                      name="heating"
-                      value={formData.heating}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-                    />
-                  </div>
-                </>
-              )}
+      <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1">
+      {activeCategory === 'household' && (
+    <>
+        <div>
+            <label htmlFor="electricityUsage" className="block text-sm font-medium text-black">
+                Monthly Electricity Usage (kWh)
+            </label>
+            <input
+                type="number"
+                id="electricityUsage"
+                name="electricityUsage"
+                value={formData.electricityUsage || ""}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+            />
+        </div>
+        <div>
+            <label htmlFor="heatingUsage" className="block text-sm font-medium text-black">
+                Monthly Heating Usage (therms)
+            </label>
+            <input
+                type="number"
+                id="heatingUsage"
+                name="heatingUsage"
+                value={formData.heatingUsage || ""}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+            />
+        </div>
+    </>
+)}
 
 
 {activeCategory === 'car' && (
@@ -229,37 +229,6 @@ const AccurateTrackingV3 = () => {
                   </div>
                 </>
               )}
-
-{activeCategory === 'household' && (
-    <>
-        <div>
-            <label htmlFor="electricityUsage" className="block text-sm font-medium text-black">
-                Monthly Electricity Usage (kWh)
-            </label>
-            <input
-                type="number"
-                id="electricityUsage"
-                name="electricityUsage"
-                value={formData.electricityUsage || ""}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-            />
-        </div>
-        <div>
-            <label htmlFor="heatingUsage" className="block text-sm font-medium text-black">
-                Monthly Heating Usage (therms)
-            </label>
-            <input
-                type="number"
-                id="heatingUsage"
-                name="heatingUsage"
-                value={formData.heatingUsage || ""}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-            />
-        </div>
-    </>
-)}
 
 
 
