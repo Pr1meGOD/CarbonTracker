@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Leaf, Home, Car, Bike, ShoppingBag, Plane, ArrowRight } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import bg from "./assets/Images/home_page_bg.jpg";
 
 const AccurateTrackingV3 = () => {
   const [activeCategory, setActiveCategory] = useState('home');
@@ -20,10 +18,12 @@ const AccurateTrackingV3 = () => {
     home: null,
     car: null,
     bike: null,
-    food: null,
-    flight: null,
   });
-  const [showImprovementTip, setShowImprovementTip] = useState(false);
+  const [showImprovementTip, setShowImprovementTip] = useState({
+    home: false,
+    car: false,
+    bike: false,
+  });
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -34,19 +34,14 @@ const AccurateTrackingV3 = () => {
     }));
   };
 
-  // Function to handle redirection to CarbonReductionTips page
   const handleRedirectToTips = () => {
     navigate('/CarbonReductionTips');
   };
 
-  // Handle form submission for emission calculation
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       let response;
-
-      // Determine active category and send the corresponding request
       if (activeCategory === 'bike') {
         response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
           cc: formData.bikeCC,
@@ -59,8 +54,8 @@ const AccurateTrackingV3 = () => {
         });
       } else if (activeCategory === 'home') {
         response = await axios.post('http://localhost:5000/api/calculateHomeEmission', {
-          electricityUsage: formData.electricityUsage,
-          heatingUsage: formData.heatingUsage,
+          electricityUsage: formData.electricity,
+          heatingUsage: formData.heating,
         });
       }
 
@@ -70,12 +65,16 @@ const AccurateTrackingV3 = () => {
         [activeCategory]: response.data,
       }));
 
-      // Show improvement tip for grades B, C, F
-      setShowImprovementTip(['B', 'C', 'F'].includes(badge));
+      setShowImprovementTip((prevTips) => ({
+        home: activeCategory === 'home' ? ['B', 'C', 'F'].includes(badge) : false,
+        car: activeCategory === 'car' ? ['B', 'C', 'F'].includes(badge) : false,
+        bike: activeCategory === 'bike' ? ['B', 'C', 'F'].includes(badge) : false,
+      }));
     } catch (error) {
       console.error('Error calculating emission:', error);
     }
   };
+
 
   const categories = [
     { id: 'home', name: 'Home', icon: <Home className="h-6 w-6" /> },
