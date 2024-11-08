@@ -42,15 +42,9 @@ function calculateCarEmission(carMileage, carFuelType) {
 
 
 
-// function calculateHouseEmission(electricityUsage, heatingUsage) {
-//     const electricityEmission = electricityUsage * 0.000743;
-//     const heatingEmission = heatingUsage * 0.0053; 
-//     return electricityEmission + heatingEmission;  
-// }
-
 function calculateHouseEmission(electricityUsage, heatingUsage) {
-    const electricityEmission = electricityUsage * 0.000743; 
-    const heatingEmission = heatingUsage * 0.0053;  
+    const electricityEmission = electricityUsage * 0.000743; // Emission factor for electricity (kWh)
+    const heatingEmission = heatingUsage * 0.0053;  // Emission factor for heating (therms)
     return electricityEmission + heatingEmission;
 }
 
