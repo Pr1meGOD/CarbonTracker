@@ -240,7 +240,7 @@ const AccurateTrackingV3 = () => {
                 type="number"
                 id="electricityUsage"
                 name="electricityUsage"
-                value={formData.electricityUsage}
+                value={formData.electricityUsage || ""}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
             />
@@ -253,13 +253,14 @@ const AccurateTrackingV3 = () => {
                 type="number"
                 id="heatingUsage"
                 name="heatingUsage"
-                value={formData.heatingUsage}
+                value={formData.heatingUsage || ""}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
             />
         </div>
     </>
 )}
+
 
 
 
