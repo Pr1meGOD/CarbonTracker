@@ -18,7 +18,7 @@ function calculateBikeEmission(cc, monthlyMileage) {
     return (emissionFactor * monthlyMileage) / 1000000;  
 }
 
-function calculateCarEmission(mileage, fuelType) {
+function calculateCarEmission(carMileage, carFuelType) {
     let factor;
     switch (fuelType) {
         case 'gasoline':
