@@ -14,7 +14,6 @@ function calculateBikeEmission(cc, monthlyMileage) {
     else if (cc <= 500) emissionFactor = 101.08; 
     else emissionFactor = 132.52;  
 
-    
     return (emissionFactor * monthlyMileage) / 1000000;  
 }
 
@@ -40,15 +39,11 @@ function calculateCarEmission(carMileage, carFuelType) {
     return carMileage * factor;
 }
 
-
 function calculateHomeEmission(electricityUsage, heatingUsage) {
     const electricityEmission = electricityUsage * 0.000743; // Emission factor for electricity (kWh)
     const heatingEmission = heatingUsage * 0.0053;  // Emission factor for heating (therms)
     return electricityEmission + heatingEmission;
 }
-
-
-
 
 function getBadge(emission) {
     if (emission <= 0.5) return 'S';  // Best category
@@ -73,7 +68,6 @@ app.post('/api/calculateBikeEmission', (req, res) => {
 });
 
 // Endpoint to calculate car emissions
-
 app.post('/api/calculateCarEmission', (req, res) => {
     const { carMileage, carFuelType } = req.body;
 
@@ -87,22 +81,19 @@ app.post('/api/calculateCarEmission', (req, res) => {
     res.json({ carEmission, badge });  // Return both carEmission and badge
 });
 
-
+// Update endpoint for home emissions calculation
 app.post('/api/calculateHomeEmission', (req, res) => {
-    const { electricityUsage, heatingUsage } = req.body;
+    const { electricityUsage, heating } = req.body; // updated to match frontend
 
-    if (!electricityUsage || !heatingUsage) {
+    if (!electricityUsage || !heating) {
         return res.status(400).json({ error: 'Electricity and heating usage are required' });
     }
 
-    const homeEmission = calculateHomeEmission(electricityUsage, heatingUsage);  // Calculate in metric tons
+    const homeEmission = calculateHomeEmission(electricityUsage, heating);  // Calculate in metric tons
     const badge = getBadge(homeEmission);
 
     res.json({ homeEmission, badge });
 });
-
-
-
 
 // Start the server
 app.listen(PORT, () => {
