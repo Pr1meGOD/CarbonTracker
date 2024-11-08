@@ -34,17 +34,23 @@ const AccurateTrackingV3 = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const payload = {
-        bikeCC: formData.bikeCC,
-        bikeMileage: formData.bikeMileage,
-        carMileage: formData.carMileage,  // Using carMileage as per the backend expectation
-        carFuelType: formData.carFuelType,  // Using carFuelType as per the backend expectation
-        electricityUsage: formData.electricity,
-        heatingUsage: formData.heating,
-      };
+    console.log("Car Mileage:", formData.carMileage);
+    console.log("Car Fuel Type:", formData.carFuelType);
   
-      const response = await axios.post('http://localhost:5000/api/calculateBikeEmission', payload);
+    try {
+      let response;
+      
+      if (activeCategory === 'bike') {
+        response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
+          cc: formData.bikeCC,
+          monthlyMileage: formData.bikeMileage,
+        });
+      } else if (activeCategory === 'car') {
+        response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
+          mileage: formData.carMileage,  // Takes value from car mileage input field
+          fuelType: formData.carFuelType,  // Takes value from car fuel type select field
+        });
+      }
   
       setResults((prevResults) => ({
         ...prevResults,
@@ -54,7 +60,6 @@ const AccurateTrackingV3 = () => {
       console.error('Error calculating emission:', error);
     }
   };
-  
   
   
 
