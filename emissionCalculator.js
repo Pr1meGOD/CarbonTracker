@@ -22,22 +22,22 @@ function calculateCarEmission(carMileage, carFuelType) {
     let factor;
     switch (carFuelType) {
         case 'gasoline':
-            factor = 0.000404;  
+            factor = 0.000404;
             break;
         case 'diesel':
-            factor = 0.00045;  
+            factor = 0.00045;
             break;
         case 'hybrid':
-            factor = 0.00025;  
+            factor = 0.00025;
             break;
         case 'electric':
-            factor = 0.00013;  
+            factor = 0.00013;
             break;
         default:
-            factor = 0;  
+            factor = 0;
+    }
 
-    return carMileage * factor;  
-}
+    return carMileage * factor;
 }
 
 
@@ -72,18 +72,18 @@ app.post('/api/calculateBikeEmission', (req, res) => {
 });
 
 // Endpoint to calculate car emissions
+
 app.post('/api/calculateCarEmission', (req, res) => {
     const { carMileage, carFuelType } = req.body;
 
-    // Validate the input data
     if (!carMileage || !carFuelType) {
         return res.status(400).json({ error: 'Car mileage and fuel type are required' });
     }
 
-    const carEmission = calculateCarEmission(carMileage, carFuelType);  
-    const badge = getBadge(carEmission);  
+    const carEmission = calculateCarEmission(carMileage, carFuelType);  // Calculate emissions
+    const badge = getBadge(carEmission);  // Assign badge based on emission level
 
-    res.json({ carEmission, badge }); 
+    res.json({ carEmission, badge });  // Return both carEmission and badge
 });
 
 
