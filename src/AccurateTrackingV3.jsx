@@ -153,39 +153,40 @@ const AccurateTrackingV3 = () => {
 
 
 {activeCategory === 'car' && (
-  <>
-    <div>
-      <label htmlFor="carMileage" className="block text-sm font-medium text-black">
-        Monthly Car Mileage
-      </label>
-      <input
-        type="number"
-        id="carMileage"
-        name="carMileage"
-        value={formData.carMileage}
-        onChange={handleInputChange}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-      />
-    </div>
-    <div>
-      <label htmlFor="carFuelType" className="block text-sm font-medium text-black">
-        Car Fuel Type
-      </label>
-      <select
-        id="carFuelType"
-        name="carFuelType"
-        value={formData.carFuelType}
-        onChange={handleInputChange}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-      >
-        <option value="" disabled>Select the type of fuel for your car</option>
-        <option value="gasoline" className='text-black'>Gasoline</option>
-        <option value="diesel" className='text-black'>Diesel</option>
-        <option value="electric" className='text-black'>Electric</option>
-        <option value="hybrid" className='text-black'>Hybrid</option>
-      </select>
-    </div>
-  </>
+    <>
+        <div>
+            <label htmlFor="carMileage" className="block text-sm font-medium text-black">
+                Car Mileage (in miles)
+            </label>
+            <input
+                type="number"
+                id="carMileage"
+                name="carMileage"
+                value={formData.carMileage}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+            />
+        </div>
+
+        <div>
+            <label htmlFor="carFuelType" className="block text-sm font-medium text-black">
+                Car Fuel Type
+            </label>
+            <select
+                id="carFuelType"
+                name="carFuelType"
+                value={formData.carFuelType}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+            >
+                <option value="">Select Fuel Type</option>
+                <option value="gasoline">Gasoline</option>
+                <option value="diesel">Diesel</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="electric">Electric</option>
+            </select>
+        </div>
+    </>
 )}
 
 
