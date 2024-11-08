@@ -35,15 +35,20 @@ const AccurateTrackingV3 = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
-        cc: formData.bikeCC,
-        monthlyMileage: formData.bikeMileage,
-        carMileage: formData.carMileage,
-        fuelType: formData.carFuelType,
-        electricityUsage: formData.electricity,
-        heatingUsage: formData.heating,
-      });
-
+      let response;
+      
+      if (activeCategory === 'bike') {
+        response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
+          cc: formData.bikeCC,
+          monthlyMileage: formData.bikeMileage,
+        });
+      } else if (activeCategory === 'car') {
+        response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
+          mileage: formData.carMileage,  // Takes value from car mileage input field
+          fuelType: formData.carFuelType,  // Takes value from car fuel type select field
+        });
+      }
+  
       setResults((prevResults) => ({
         ...prevResults,
         [activeCategory]: response.data,
@@ -52,6 +57,8 @@ const AccurateTrackingV3 = () => {
       console.error('Error calculating emission:', error);
     }
   };
+  
+  
 
   const categories = [
     { id: 'home', name: 'Home', icon: <Home className="h-6 w-6" /> },
@@ -141,41 +148,44 @@ const AccurateTrackingV3 = () => {
                 </>
               )}
 
+
 {activeCategory === 'car' && (
-                <>
-                  <div>
-                    <label htmlFor="carMileage" className="block text-sm font-medium text-black">
-                      Monthly Car Mileage
-                    </label>
-                    <input
-                      type="number"
-                      id="carMileage"
-                      name="carMileage"
-                      value={formData.carMileage}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="carFuelType" className="block text-sm font-medium text-black">
-                      Car Fuel Type
-                    </label>
-                    <select
-                      id="carFuelType"
-                      name="carFuelType"
-                      value={formData.carFuelType}
-                      onChange={handleInputChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
-                    >
-                      <option value="" disabled>Select the type of fuel for your car</option>
-                      <option value="gasoline" className='text-black'>Gasoline</option>
-                      <option value="diesel" className='text-black'>Diesel</option>
-                      <option value="electric" className='text-black'>Electric</option>
-                      <option value="hybrid" className='text-black'>Hybrid</option>
-                    </select>
-                  </div>
-                </>
-              )}
+  <>
+    <div>
+      <label htmlFor="carMileage" className="block text-sm font-medium text-black">
+        Monthly Car Mileage
+      </label>
+      <input
+        type="number"
+        id="carMileage"
+        name="carMileage"
+        value={formData.carMileage}
+        onChange={handleInputChange}
+        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+      />
+    </div>
+    <div>
+      <label htmlFor="carFuelType" className="block text-sm font-medium text-black">
+        Car Fuel Type
+      </label>
+      <select
+        id="carFuelType"
+        name="carFuelType"
+        value={formData.carFuelType}
+        onChange={handleInputChange}
+        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+      >
+        <option value="" disabled>Select the type of fuel for your car</option>
+        <option value="gasoline" className='text-black'>Gasoline</option>
+        <option value="diesel" className='text-black'>Diesel</option>
+        <option value="electric" className='text-black'>Electric</option>
+        <option value="hybrid" className='text-black'>Hybrid</option>
+      </select>
+    </div>
+  </>
+)}
+
+
 
               {activeCategory === 'bike' && (
                 <>
@@ -220,12 +230,16 @@ const AccurateTrackingV3 = () => {
 
             {results[activeCategory] && (
   <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
-    <p>Emission Result: {results[activeCategory].bikeEmission ? `${results[activeCategory].bikeEmission} metric tons CO₂` : 'No data available'}</p>
+    <p>
+      Emission Result: {results[activeCategory].bikeEmission 
+        ? `${results[activeCategory].bikeEmission} metric tons CO₂` 
+        : results[activeCategory].carEmission 
+        ? `${results[activeCategory].carEmission} metric tons CO₂` 
+        : 'No data available'}
+    </p>
     <p>Badge: {results[activeCategory].badge}</p>
   </div>
 )}
-
-
           </div>
         </main>
       </div>
