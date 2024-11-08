@@ -32,40 +32,42 @@ const AccurateTrackingV3 = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-        let response;
 
         // Determine active category and send the corresponding request
-        if (activeCategory === 'bike') {
-            response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
-                cc: formData.bikeCC,
-                monthlyMileage: formData.bikeMileage,
-            });
-        } else if (activeCategory === 'car') {
-            response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
-                carMileage: formData.carMileage,
-                carFuelType: formData.carFuelType,
-            });
-        } else if (activeCategory === 'household') {
-            response = await axios.post('http://localhost:5000/api/calculateHomeEmission', {
-                electricityUsage: formData.electricityUsage,
-                heatingUsage: formData.heatingUsage,
-            });
-        }
-
-        // Store and display both carEmission and badge
-        setResults((prevResults) => ({
-            ...prevResults,
-            [activeCategory]: response.data,
-        }));
-
-    } catch (error) {
-        console.error('Error calculating emission:', error);
-    }
-};
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+      
+          try {
+              let response;
+      
+              if (activeCategory === 'bike') {
+                  response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
+                      cc: formData.bikeCC,
+                      monthlyMileage: formData.bikeMileage,
+                  });
+              } else if (activeCategory === 'car') {
+                  response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
+                      carMileage: formData.carMileage,
+                      carFuelType: formData.carFuelType,
+                  });
+              } else if (activeCategory === 'household') {
+                  response = await axios.post('http://localhost:5000/api/calculateHomeEmission', {
+                      electricityUsage: formData.electricityUsage,
+                      heatingUsage: formData.heatingUsage,
+                  });
+              }
+      
+              // Store and display the response data for the selected category
+              setResults((prevResults) => ({
+                  ...prevResults,
+                  [activeCategory]: response.data,
+              }));
+      
+          } catch (error) {
+              console.error('Error calculating emission:', error);
+          }
+      };
+      
 
 
 
