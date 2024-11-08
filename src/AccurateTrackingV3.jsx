@@ -220,10 +220,11 @@ const AccurateTrackingV3 = () => {
 
             {results[activeCategory] && (
   <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
-    <p>Emission Result: {results[activeCategory].emission ? `${results[activeCategory].emission} metric tons CO₂` : 'No data available'}</p>
+    <p>Emission Result: {results[activeCategory].bikeEmission ? `${results[activeCategory].bikeEmission} metric tons CO₂` : 'No data available'}</p>
     <p>Badge: {results[activeCategory].badge}</p>
   </div>
 )}
+
 
           </div>
         </main>
