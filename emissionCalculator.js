@@ -20,23 +20,23 @@ function calculateBikeEmission(cc, monthlyMileage) {
 
 function calculateCarEmission(carMileage, carFuelType) {
     let factor;
-    switch (FuelType) {  // Corrected variable name
+    switch (carFuelType) {
         case 'gasoline':
-            factor = 0.000404; 
+            factor = 0.000404;  
             break;
         case 'diesel':
-            factor = 0.00045; 
+            factor = 0.00045;  
             break;
         case 'hybrid':
-            factor = 0.00025; 
+            factor = 0.00025;  
             break;
         case 'electric':
-            factor = 0.00013; 
+            factor = 0.00013;  
             break;
         default:
-            factor = 0; 
-    }
-    return carMileage * factor;  // Calculate emission based on mileage and factor
+            factor = 0;  
+
+    return carMileage * factor;  
 }
 
 
