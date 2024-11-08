@@ -12,11 +12,17 @@ const AccurateTrackingV3 = () => {
     carMileage: '',
     carFuelType: '',
     bikeMileage: '',
-    bikeCC: '', // Added for bike engine cc input
+    bikeCC: '',
     meatConsumption: '',
     flights: '',
   });
-  const [result, setResult] = useState(null);
+  const [results, setResults] = useState({
+    home: null,
+    car: null,
+    bike: null,
+    food: null,
+    flight: null,
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +35,6 @@ const AccurateTrackingV3 = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send form data to the correct backend API
       const response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
         cc: formData.bikeCC,
         monthlyMileage: formData.bikeMileage,
@@ -38,29 +43,15 @@ const AccurateTrackingV3 = () => {
         electricityUsage: formData.electricity,
         heatingUsage: formData.heating,
       });
-  
-      console.log("API Response:", response.data);  // Log the API response
-  
-      // Set the result data from the API response
-      setResult(response.data);
+
+      setResults((prevResults) => ({
+        ...prevResults,
+        [activeCategory]: response.data,
+      }));
     } catch (error) {
       console.error('Error calculating emission:', error);
     }
-  
-    // Reset the form
-    setFormData({
-      electricity: '',
-      heating: '',
-      carMileage: '',
-      carFuelType: 'gasoline',
-      bikeMileage: '',
-      bikeCC: '',
-      meatConsumption: '',
-      flights: '',
-    });
   };
-  
-  
 
   const categories = [
     { id: 'home', name: 'Home', icon: <Home className="h-6 w-6" /> },
@@ -150,7 +141,7 @@ const AccurateTrackingV3 = () => {
                 </>
               )}
 
-              {activeCategory === 'car' && (
+{activeCategory === 'car' && (
                 <>
                   <div>
                     <label htmlFor="carMileage" className="block text-sm font-medium text-black">
@@ -227,13 +218,12 @@ const AccurateTrackingV3 = () => {
               </div>
             </form>
 
-            {result && (
-  <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
-    <p>Emission Result: {result.bikeEmission ? result.bikeEmission + ' metric tons CO₂' : 'No data available'}</p>
-    <p>Badge: {result.badge}</p>
-  </div>
-)}
-
+            {results[activeCategory] && (
+              <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
+                <p>Emission Result: {results[activeCategory].emission ? results[activeCategory].emission + ' metric tons CO₂' : 'No data available'}</p>
+                <p>Badge: {results[activeCategory].badge}</p>
+              </div>
+            )}
           </div>
         </main>
       </div>
