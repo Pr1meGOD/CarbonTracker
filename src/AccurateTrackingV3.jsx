@@ -228,6 +228,39 @@ const AccurateTrackingV3 = () => {
                 </>
               )}
 
+{activeCategory === 'household' && (
+    <>
+        <div>
+            <label htmlFor="electricityUsage" className="block text-sm font-medium text-black">
+                Monthly Electricity Usage (kWh)
+            </label>
+            <input
+                type="number"
+                id="electricityUsage"
+                name="electricityUsage"
+                value={formData.electricityUsage}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+            />
+        </div>
+        <div>
+            <label htmlFor="heatingUsage" className="block text-sm font-medium text-black">
+                Monthly Heating Usage (therms)
+            </label>
+            <input
+                type="number"
+                id="heatingUsage"
+                name="heatingUsage"
+                value={formData.heatingUsage}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
+            />
+        </div>
+    </>
+)}
+
+
+
               <div className="flex justify-end">
                 <button
                   type="submit"
@@ -240,14 +273,17 @@ const AccurateTrackingV3 = () => {
 
             {results[activeCategory] && (
   <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
-    <p>
-      Emission Result: {results[activeCategory].bikeEmission 
-        ? `${results[activeCategory].bikeEmission} metric tons CO₂` 
+<p>
+    Emission Result: {results[activeCategory].bikeEmission 
+        ? `${results[activeCategory].bikeEmission} metric tons CO₂`
         : results[activeCategory].carEmission 
-        ? `${results[activeCategory].carEmission} metric tons CO₂` 
+        ? `${results[activeCategory].carEmission} metric tons CO₂`
+        : results[activeCategory].homeEmission 
+        ? `${results[activeCategory].homeEmission} metric tons CO₂`
         : 'No data available'}
-    </p>
-    <p>Badge: {results[activeCategory].badge}</p>
+</p>
+<p>Badge: {results[activeCategory].badge}</p>
+
   </div>
 )}
           </div>
