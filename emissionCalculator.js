@@ -4,19 +4,18 @@ const PORT = process.env.PORT || 5000;
 const cors = require('cors');
 app.use(cors());
 
-
 // Middleware to parse JSON bodies
 app.use(express.json());
 
 // Function to calculate emissions for bike, car, and home
 function calculateBikeEmission(cc, monthlyMileage) {
     let emissionFactor;
-    if (cc <= 125) emissionFactor = 0.01;  // Low emission factor for smaller bikes
-    else if (cc <= 500) emissionFactor = 0.015;  // Medium emission factor for mid-range bikes
-    else emissionFactor = 0.02;  // Higher emission factor for larger bikes
+    if (cc <= 125) emissionFactor = 83.19;  // Emission factor in g/km for small motorbike (up to 125cc)
+    else if (cc <= 500) emissionFactor = 101.08;  // Emission factor in g/km for medium motorbike (125cc to 500cc)
+    else emissionFactor = 132.52;  // Emission factor in g/km for large motorbike (over 500cc)
 
-    // Return emission in metric tons (not kg)
-    return (emissionFactor * monthlyMileage) / 1000;
+    // Convert monthly mileage to total emissions in metric tons
+    return (emissionFactor * monthlyMileage) / 1000000;  // Divide by 1,000,000 to convert g to metric tons
 }
 
 function calculateCarEmission(mileage, fuelType) {
