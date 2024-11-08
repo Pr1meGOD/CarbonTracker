@@ -39,11 +39,12 @@ const AccurateTrackingV3 = () => {
     try {
       let response;
       
-      if (activeCategory === 'bike') {
-        response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
-          cc: formData.bikeCC,
-          monthlyMileage: formData.bikeMileage,
+      if (activeCategory === 'car') {
+        response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
+            carMileage: formData.carMileage,  // Send the car mileage value
+            carFuelType: formData.carFuelType,  // Send the car fuel type value
         });
+    
       } else if (activeCategory === 'car') {
         response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
           carmileage: formData.carMileage,  // Takes value from car mileage input field
