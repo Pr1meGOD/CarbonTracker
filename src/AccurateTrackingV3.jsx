@@ -237,6 +237,18 @@ const AccurateTrackingV3 = () => {
   </button>
 </form>
 
+{results[activeCategory] && (
+  <div className="mt-6 p-4 bg-green-100 rounded-lg text-center">
+    <p className="text-green-800 font-medium">
+      Your {activeCategory} emission: {results[activeCategory][`${activeCategory}Emission`].toFixed(2)} metric tons
+    </p>
+    <p className="text-green-800 font-medium">
+      Grade: {results[activeCategory].badge}
+    </p>
+  </div>
+)}
+
+
 {showImprovementTip && (
   <div className="mt-6 bg-yellow-100 p-4 rounded-lg text-center">
     <p className="text-yellow-800 font-medium">
