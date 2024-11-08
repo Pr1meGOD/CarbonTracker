@@ -38,6 +38,7 @@ function calculateCarEmission(carMileage, carFuelType) {
 
     return carMileage * factor;  
 }
+}
 
 
 
