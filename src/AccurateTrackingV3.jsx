@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Leaf, Home, Car, Bike, ShoppingBag, Plane } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import bg from "./assets/Images/home_page_bg.jpg";
 
@@ -85,7 +86,6 @@ const AccurateTrackingV3 = () => {
     { id: 'flight', name: 'Flight', icon: <Plane className="h-6 w-6" /> },
   ];
 
-  
   return (
     <div
       className="min-h-screen w-screen h-screen flex flex-col relative bg-cover bg-center bg-no-repeat overflow-x-hidden overflow-y-hidden"
@@ -115,9 +115,7 @@ const AccurateTrackingV3 = () => {
         </header>
   
         <main className="flex-grow container mx-auto py-12 px-4">
-          <h1 className="text-4xl font-bold mb-8 text-center text-white">
-            Accurate Carbon Footprint Tracking
-          </h1>
+          <h1 className="text-4xl font-bold mb-8 text-center text-white">Accurate Carbon Footprint Tracking</h1>
           <p className="text-xl mb-12 text-center max-w-3xl mx-auto text-white">
             Track your carbon footprint with precision. Our advanced tools help you measure and understand your impact on the environment, including detailed calculations for various aspects of your lifestyle.
           </p>
@@ -127,9 +125,7 @@ const AccurateTrackingV3 = () => {
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  className={`flex items-center px-4 py-2 mr-4 rounded-full ${
-                    activeCategory === category.id ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'
-                  }`}
+                  className={`flex items-center px-4 py-2 mr-4 rounded-full ${activeCategory === category.id ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}`}
                   onClick={() => setActiveCategory(category.id)}
                 >
                   {category.icon}
@@ -138,8 +134,9 @@ const AccurateTrackingV3 = () => {
               ))}
             </div>
   
+            {/* Form goes here */}
             <form onSubmit={handleSubmit} className="space-y-6 grid grid-cols-1">
-              {activeCategory === 'home' && (
+            {activeCategory === 'home' && (
                 <>
                   <div>
                     <label htmlFor="electricityUsage" className="block text-sm font-medium text-black">
@@ -257,8 +254,8 @@ const AccurateTrackingV3 = () => {
                 <p>Badge: {results[activeCategory].badge}</p>
               </div>
             )}
-  
-            {/* Show improvement tip only for the active category */}
+            
+            {/* Show improvement tip */}
             {showImprovementTip[activeCategory] && (
               <div className="mt-6 bg-yellow-100 p-4 rounded-lg text-center">
                 <p className="text-yellow-800 font-medium">
@@ -276,11 +273,7 @@ const AccurateTrackingV3 = () => {
         </main>
       </div>
     </div>
-  );
-};
-export default AccurateTrackingV3;
+  );};
+  
 
-
-
-
-
+  export default AccurateTrackingV3;
