@@ -10,24 +10,41 @@ app.use(express.json());
 // Function to calculate emissions for bike, car, and home
 function calculateBikeEmission(cc, monthlyMileage) {
     let emissionFactor;
-    if (cc <= 125) emissionFactor = 83.19;  // Emission factor in g/km for small motorbike (up to 125cc)
-    else if (cc <= 500) emissionFactor = 101.08;  // Emission factor in g/km for medium motorbike (125cc to 500cc)
-    else emissionFactor = 132.52;  // Emission factor in g/km for large motorbike (over 500cc)
+    if (cc <= 125) emissionFactor = 83.19;  
+    else if (cc <= 500) emissionFactor = 101.08; 
+    else emissionFactor = 132.52;  
 
-    // Convert monthly mileage to total emissions in metric tons
-    return (emissionFactor * monthlyMileage) / 1000000;  // Divide by 1,000,000 to convert g to metric tons
+    
+    return (emissionFactor * monthlyMileage) / 1000000;  
 }
 
 function calculateCarEmission(mileage, fuelType) {
-    const factor = fuelType === 'gasoline' ? 0.000404 : 0.00043;  // Emission factor based on fuel type
-    return mileage * factor;  // Return emission in metric tons
+    let factor;
+    switch (fuelType) {
+        case 'gasoline':
+            factor = 0.000404; 
+            break;
+        case 'diesel':
+            factor = 0.00045; 
+            break;
+        case 'hybrid':
+            factor = 0.00025; 
+            break;
+        case 'electric':
+            factor = 0.00013; 
+            break;
+        default:
+            factor = 0; 
+    }
+    return mileage * factor;  
 }
 
 function calculateHouseEmission(electricityUsage, heatingUsage) {
     const electricityEmission = electricityUsage * 0.000743;
-    const heatingEmission = heatingUsage * 0.0053;
-    return (electricityEmission + heatingEmission) / 1000;  // Return emission in metric tons
+    const heatingEmission = heatingUsage * 0.0053; 
+    return electricityEmission + heatingEmission;  
 }
+
 
 function getBadge(emission) {
     if (emission <= 0.5) return 'S';  // Best category
