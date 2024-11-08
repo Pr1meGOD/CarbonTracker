@@ -83,17 +83,18 @@ app.post('/api/calculateCarEmission', (req, res) => {
 
 // Update endpoint for home emissions calculation
 app.post('/api/calculateHomeEmission', (req, res) => {
-    const { electricityUsage, heating } = req.body; // updated to match frontend
+    const { electricityUsage, heatingUsage } = req.body; 
 
-    if (!electricityUsage || !heating) {
+    if (!electricityUsage || !heatingUsage) {
         return res.status(400).json({ error: 'Electricity and heating usage are required' });
     }
 
-    const homeEmission = calculateHomeEmission(electricityUsage, heating);  // Calculate in metric tons
+    const homeEmission = calculateHomeEmission(electricityUsage, heatingUsage);  
     const badge = getBadge(homeEmission);
 
     res.json({ homeEmission, badge });
 });
+
 
 // Start the server
 app.listen(PORT, () => {

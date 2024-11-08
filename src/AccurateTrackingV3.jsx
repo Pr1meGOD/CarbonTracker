@@ -41,7 +41,7 @@ const AccurateTrackingV3 = () => {
     navigate('/CarbonReductionTips');
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       let response;
@@ -56,21 +56,18 @@ const AccurateTrackingV3 = () => {
           carFuelType: formData.carFuelType,
         });
       } else if (activeCategory === 'home') {
-        console.log("Form Data before submission:", formData); 
         response = await axios.post('http://localhost:5000/api/calculateHomeEmission', {
-          electricity: formData.electricity,
-          heating: formData.heating,
+          electricityUsage: formData.electricity, // updated to electricityUsage
+          heatingUsage: formData.heating,         // updated to heatingUsage
         });
       }
-      
-
-
+  
       const { badge } = response.data;
       setResults((prevResults) => ({
         ...prevResults,
         [activeCategory]: response.data,
       }));
-
+  
       setShowImprovementTip((prevTips) => ({
         home: activeCategory === 'home' ? ['B', 'C', 'F'].includes(badge) : false,
         car: activeCategory === 'car' ? ['B', 'C', 'F'].includes(badge) : false,
@@ -80,6 +77,8 @@ const AccurateTrackingV3 = () => {
       console.error('Error calculating emission:', error);
     }
   };
+  
+      
 
 
   const categories = [
