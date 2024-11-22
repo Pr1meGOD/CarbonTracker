@@ -17,31 +17,46 @@ const AuthenticationPage = () => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-
-    // Simulate the authentication process
-    if (isLoginMode) {
-        // Simulating login
-        if (email === "test@example.com" && password === "password") {
-            setSuccessMessage("Login successful!");
-            setTimeout(() => {
-                navigate('/AccurateTrackingV3'); // Redirect to home page after 2 seconds
-            }, 2000);
-        } else {
-            setError("Invalid email or password.");
+  
+    try {
+      const response = await fetch(
+        isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
         }
-    } else {
-        // Simulating registration
-        if (email && password) {
-            setSuccessMessage("Registration successful!");
-            setTimeout(() => {
-                navigate('/'); // Redirect to home page after 2 seconds
-            }, 2000);
+      );
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        setSuccessMessage(
+          isLoginMode
+            ? 'Login successful! Redirecting to the tracking page...'
+            : 'Registration successful! Redirecting to the login page...'
+        );
+  
+        // Handle successful login
+        if (isLoginMode) {
+          // Simulate redirect after successful login
+          setTimeout(() => {
+            navigate('/AccurateTrackingV3'); // Redirect to tracking page
+          }, 2000);
         } else {
-            setError("Please fill in all fields.");
+          // Simulate redirect after successful registration
+          setTimeout(() => {
+            navigate('/'); // Redirect to login page
+          }, 2000);
         }
+      } else {
+        setError(data.message || 'An error occurred during authentication.');
+      }
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
     }
-
-};
+  };
+  
 
 
   return (
