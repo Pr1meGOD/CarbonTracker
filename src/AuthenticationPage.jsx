@@ -18,6 +18,12 @@ const AuthenticationPage = () => {
     setError('');
     setSuccessMessage('');
   
+    // Input validation to check if email and password fields are filled
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+  
     try {
       const response = await fetch(
         isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
@@ -37,7 +43,7 @@ const AuthenticationPage = () => {
             : 'Registration successful! Redirecting to the login page...'
         );
   
-        // Handle successful login
+        // Handle successful login or registration
         if (isLoginMode) {
           // Simulate redirect after successful login
           setTimeout(() => {
@@ -56,6 +62,7 @@ const AuthenticationPage = () => {
       setError('Something went wrong. Please try again.');
     }
   };
+  
   
 
 
