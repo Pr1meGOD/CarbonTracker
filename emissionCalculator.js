@@ -13,7 +13,7 @@ const db = mysql.createPool({
     host: 'localhost',    // Update to your database host
     user: 'root',         // Update to your database user
     password: 'atharva@2212',         // Update to your database password
-    database: 'CarbonTracker' // Update to your database name
+    database: 'sem3_project' // Update to your database name
 });
 
 // Route: User Registration
