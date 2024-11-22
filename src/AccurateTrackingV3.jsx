@@ -177,7 +177,7 @@ const handleSubmit = async (e) => {
                 <>
                   <div>
                     <label htmlFor="carMileage" className="block text-sm font-medium text-black">
-                      Car Mileage (in miles)
+                      Monthly Car Mileage (in miles)
                     </label>
                     <input
                       type="number"
