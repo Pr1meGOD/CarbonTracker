@@ -77,6 +77,74 @@ const handleSubmit = async (e) => {
       console.error('Error calculating emission:', error);
     }
   };
+
+  const calculateCarEmission = async (carMileage, carFuelType) => {
+    try {
+        const response = await fetch('http://localhost:5000/api/calculateCarEmission', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ carMileage, carFuelType }),
+        });
+
+        const { carEmission, badge } = await response.json();
+
+        console.log('Car Emission:', carEmission, 'Badge:', badge);
+
+        // Save the emission data to the backend
+        saveEmissionData('car', carEmission, badge);
+    } catch (error) {
+        console.error('Error calculating car emission:', error);
+    }
+};
+
+
+
+const calculateBikeEmission = async (cc, monthlyMileage) => {
+  try {
+      const response = await fetch('http://localhost:5000/api/calculateBikeEmission', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ cc, monthlyMileage }),
+      });
+
+      const { bikeEmission, badge } = await response.json();
+
+      console.log('Bike Emission:', bikeEmission, 'Badge:', badge);
+
+      // Save the emission data to the backend
+      saveEmissionData('bike', bikeEmission, badge);
+  } catch (error) {
+      console.error('Error calculating bike emission:', error);
+  }
+};
+
+
+
+  const calculateHouseholdEmission = async (electricityUsage, heatingUsage) => {
+    try {
+        const response = await fetch('http://localhost:5000/api/calculateHomeEmission', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ electricityUsage, heatingUsage }),
+        });
+
+        const { homeEmission, badge } = await response.json();
+
+        console.log('Household Emission:', homeEmission, 'Badge:', badge);
+
+        // Save the emission data to the backend
+        saveEmissionData('household', homeEmission, badge);
+    } catch (error) {
+        console.error('Error calculating household emission:', error);
+    }
+};
+
   
       
 
