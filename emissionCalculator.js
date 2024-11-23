@@ -12,8 +12,6 @@ app.use(express.json());
 
 const secretKey = 'your_secret_key';
 
-
-// JWT Authentication Middleware
 const authMiddleware = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
@@ -102,6 +100,8 @@ const db = mysql.createPool({
     database: 'sem3_project' // Update to your database name
 });
 
+
+
 // Route: User Registration
 app.post('/api/register', async (req, res) => {
     let { username, password } = req.body;
@@ -146,50 +146,6 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-
-// Route: User Login
-app.post('/api/login', (req, res) => {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
-    }
-
-    db.query(
-        'SELECT * FROM test_Users WHERE username = ?',
-        [username],
-        async (err, results) => {
-            if (err) return res.status(500).json({ error: err.message });
-
-            if (results.length === 0) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            const user = results[0];
-
-            try {
-                // Validate the password
-                const isPasswordValid = await bcrypt.compare(password, user.password);
-                if (!isPasswordValid) {
-                    return res.status(401).json({ error: 'Invalid password' });
-                }
-
-                // Generate a JWT token
-                const secretKey = 'your_secret_key'; // Replace with a secure environment variable in production
-                const token = jwt.sign({ user_id: user.id }, secretKey, { expiresIn: '1h' });
-
-                // Respond with success message and token
-                res.status(200).json({ 
-                    message: 'Logged in successfully', 
-                    userId: user.id, 
-                    token 
-                });
-            } catch (error) {
-                res.status(500).json({ error: 'Error during authentication' });
-            }
-        }
-    );
-});
 
 
 
