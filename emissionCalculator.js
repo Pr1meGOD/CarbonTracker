@@ -9,7 +9,6 @@ const jwt = require('jsonwebtoken');
 
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.json());
 
 const secretKey = 'your_secret_key';
 
