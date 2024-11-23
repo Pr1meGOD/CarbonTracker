@@ -111,8 +111,6 @@ const saveEmissionData = async (emissionType, emissionValue, badge) => {
   console.log(result); // Log the result or handle the UI update
 };
 
-
-
   
 
 
