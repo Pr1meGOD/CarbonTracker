@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 5000;
 const cors = require('cors');
 const mysql = require('mysql2'); // Added MySQL
 const bcrypt = require('bcrypt'); // For password hashing
@@ -92,12 +91,6 @@ app.post('/api/save-car-emission', authMiddleware, (req, res) => {
         res.status(200).json({ message: 'Car emission data saved successfully.' });
     });
 });
-
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
-
 
 
 
@@ -199,31 +192,6 @@ app.post('/api/login', (req, res) => {
 });
 
 
-
-
-app.post('/api/save-car-emission', authenticateUser, (req, res) => {
-    const { carEmission, badge } = req.body;
-    const userId = req.user.user_id;
-
-    if (!carEmission || !badge) {
-        return res.status(400).json({ error: 'carEmission and badge are required' });
-    }
-
-    const sqlQuery = `
-        UPDATE test_Users
-        SET car_emissions = ?, badge = ?, calculation_date = NOW()
-        WHERE user_id = ?;
-    `;
-
-    db.query(sqlQuery, [carEmission, badge, userId], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Database update failed' });
-        }
-
-        res.status(200).json({ message: 'Emission data saved successfully!' });
-    });
-});
 
 
 // Function to calculate emissions for bike, car, and home (unchanged from your code)
