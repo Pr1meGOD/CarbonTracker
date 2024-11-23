@@ -13,6 +13,7 @@ app.use(express.json());
 
 const secretKey = 'your_secret_key';
 
+
 // JWT Authentication Middleware
 const authMiddleware = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -21,20 +22,20 @@ const authMiddleware = (req, res, next) => {
         return res.status(401).json({ error: 'Authorization token required.' });
     }
 
-    const token = authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
+    const token = authHeader.split(' ')[1]; // Extract the token part
 
     jwt.verify(token, secretKey, (err, user) => {
         if (err) {
             return res.status(403).json({ error: 'Invalid or expired token.' });
         }
 
-        req.user = user; // Attach user info from token to the request object
+        req.user = user; // Attach user info from the token to the request object
         next();
     });
 };
 
-// Route for login (generates token)
-router.post('/api/login', (req, res) => {
+// Login Route (Generates JWT Token)
+app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -57,19 +58,18 @@ router.post('/api/login', (req, res) => {
             return res.status(401).json({ error: 'Invalid password' });
         }
 
-        // Generate a JWT token
+        // Generate JWT Token
         const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
 
         res.status(200).json({
             message: 'Login successful',
             token,
-            userId: user.id, // Optional: Send back user ID for debugging purposes
         });
     });
 });
 
-// Route to save car emissions
-router.post('/api/save-car-emission', authMiddleware, (req, res) => {
+// Save Car Emission Route (Authenticated)
+app.post('/api/save-car-emission', authMiddleware, (req, res) => {
     const { carEmission, badge } = req.body;
     const userId = req.user.userId; // Extracted from JWT payload
 
@@ -93,7 +93,11 @@ router.post('/api/save-car-emission', authMiddleware, (req, res) => {
     });
 });
 
-module.exports = router;
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
 
 
 
