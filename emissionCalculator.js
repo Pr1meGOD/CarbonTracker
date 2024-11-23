@@ -6,12 +6,14 @@ const mysql = require('mysql2'); // Added MySQL
 const bcrypt = require('bcrypt'); // For password hashing
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
+const router = express.Router();
 
 app.use(cors());
 app.use(express.json());
 
 const secretKey = 'your_secret_key';
 
+// JWT Authentication Middleware
 const authMiddleware = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
@@ -26,15 +28,50 @@ const authMiddleware = (req, res, next) => {
             return res.status(403).json({ error: 'Invalid or expired token.' });
         }
 
-        req.user = user; // Attach user info from token to request object
+        req.user = user; // Attach user info from token to the request object
         next();
     });
 };
 
-// Route for saving car emission
+// Route for login (generates token)
+router.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    const query = 'SELECT * FROM test_Users WHERE username = ?';
+
+    db.query(query, [username], async (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = results[0];
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid password' });
+        }
+
+        // Generate a JWT token
+        const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
+
+        res.status(200).json({
+            message: 'Login successful',
+            token,
+            userId: user.id, // Optional: Send back user ID for debugging purposes
+        });
+    });
+});
+
+// Route to save car emissions
 router.post('/api/save-car-emission', authMiddleware, (req, res) => {
     const { carEmission, badge } = req.body;
-    const userId = req.user.userId; // Extracted from the decoded JWT in the authMiddleware
+    const userId = req.user.userId; // Extracted from JWT payload
 
     if (!carEmission || !badge) {
         return res.status(400).json({ error: 'Car emission and badge are required.' });
@@ -57,6 +94,8 @@ router.post('/api/save-car-emission', authMiddleware, (req, res) => {
 });
 
 module.exports = router;
+
+
 
 // Configure MySQL Connection
 const db = mysql.createPool({
