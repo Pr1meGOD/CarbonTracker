@@ -13,57 +13,58 @@ const AuthenticationPage = () => {
   const [successMessage, setSuccessMessage] = useState(''); // State for success message
   const navigate = useNavigate(); // Initialize useNavigate
 
+ 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
-  
+
     // Input validation to check if email and password fields are filled
     if (!email || !password) {
-      setError("Please fill in all fields.");
-      return;
+        setError("Please fill in all fields.");
+        return;
     }
-  
+
     try {
-      const response = await fetch(
-        isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          // Use 'username' instead of 'email' to match backend field names
-          body: JSON.stringify({ username: email, password }),
-        }
-      );
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        setSuccessMessage(
-          isLoginMode
-            ? 'Login successful! Redirecting to the tracking page...'
-            : 'Registration successful! Redirecting to the login page...'
+        const response = await fetch(
+            isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                // Use 'username' instead of 'email' to match backend field names
+                body: JSON.stringify({ username: email, password }),
+            }
         );
-  
-        // Handle successful login or registration
-        if (isLoginMode) {
-          // Simulate redirect after successful login
-          setTimeout(() => {
-            navigate('/AccurateTrackingV3'); // Redirect to tracking page
-          }, 2000);
+
+        const data = await response.json();
+
+        if (response.ok) {
+            setSuccessMessage(
+                isLoginMode
+                    ? 'Login successful! Redirecting to the tracking page...'
+                    : 'Registration successful! Switching to login...'
+            );
+
+            if (isLoginMode) {
+                // Simulate redirect after successful login
+                setTimeout(() => {
+                    navigate('/AccurateTrackingV3'); // Redirect to tracking page
+                }, 2000);
+            } else {
+                // Switch to login mode after registration
+                setTimeout(() => {
+                    setIsLoginMode(true); // Toggle to login mode
+                    setSuccessMessage(''); // Clear success message after switching
+                }, 2000);
+            }
         } else {
-          // Simulate redirect after successful registration
-          setTimeout(() => {
-            navigate('/'); // Redirect to login page
-          }, 2000);
+            setError(data.error || 'An error occurred during authentication.');
         }
-      } else {
-        setError(data.error || 'An error occurred during authentication.');
-      }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+        setError('Something went wrong. Please try again.');
     }
-  };
-  
+};
   
   
 
