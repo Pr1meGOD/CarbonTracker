@@ -102,18 +102,30 @@ app.post('/api/login', (req, res) => {
             const user = results[0];
 
             try {
+                // Validate the password
                 const isPasswordValid = await bcrypt.compare(password, user.password);
                 if (!isPasswordValid) {
                     return res.status(401).json({ error: 'Invalid password' });
                 }
 
-                res.status(200).json({ message: 'Logged in successfully', userId: user.id });
+                // Generate a JWT token
+                const secretKey = 'your_secret_key'; // Replace with a secure environment variable in production
+                const token = jwt.sign({ user_id: user.id }, secretKey, { expiresIn: '1h' });
+
+                // Respond with success message and token
+                res.status(200).json({ 
+                    message: 'Logged in successfully', 
+                    userId: user.id, 
+                    token 
+                });
             } catch (error) {
                 res.status(500).json({ error: 'Error during authentication' });
             }
         }
     );
 });
+
+
 
 
 app.post('/api/save-car-emission', authenticateUser, (req, res) => {
