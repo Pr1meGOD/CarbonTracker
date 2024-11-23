@@ -64,6 +64,7 @@ const AuthenticationPage = () => {
     } catch (err) {
         setError('Something went wrong. Please try again.');
     }
+    
 };
   
 
