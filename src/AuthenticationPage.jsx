@@ -66,6 +66,54 @@ const AuthenticationPage = () => {
     }
 };
   
+const login = async (email, password) => {
+  try {
+      const response = await fetch('http://localhost:5000/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+          localStorage.setItem('authToken', data.token); // Save token
+          console.log('Login successful!');
+      } else {
+          console.error('Login failed:', data.error);
+      }
+  } catch (err) {
+      console.error('Something went wrong:', err);
+  }
+};
+
+
+const saveCarEmission = async (carEmission, badge) => {
+  const token = localStorage.getItem('authToken'); // Retrieve token from storage
+
+  try {
+      const response = await fetch('http://localhost:5000/api/save-car-emission', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ carEmission, badge })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+          console.log('Emission data saved successfully:', data);
+      } else {
+          console.error('Error saving data:', data.error);
+      }
+  } catch (err) {
+      console.error('Something went wrong:', err);
+  }
+};
+
+// Example usage
+saveCarEmission(0.7725, 'A');
+
   
 
 

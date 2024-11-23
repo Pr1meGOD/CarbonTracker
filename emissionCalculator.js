@@ -5,9 +5,28 @@ const cors = require('cors');
 const mysql = require('mysql2'); // Added MySQL
 const bcrypt = require('bcrypt'); // For password hashing
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
+
+const secretKey = 'your_secret_key';
+
+// Middleware to authenticate user requests
+const authenticateUser = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ error: 'Authorization token required' });
+    }
+    try {
+        const decoded = jwt.verify(token, secretKey);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+};
 
 // Configure MySQL Connection
 const db = mysql.createPool({
@@ -94,6 +113,31 @@ app.post('/api/login', (req, res) => {
             }
         }
     );
+});
+
+
+app.post('/api/save-car-emission', authenticateUser, (req, res) => {
+    const { carEmission, badge } = req.body;
+    const userId = req.user.user_id;
+
+    if (!carEmission || !badge) {
+        return res.status(400).json({ error: 'carEmission and badge are required' });
+    }
+
+    const sqlQuery = `
+        UPDATE test_Users
+        SET car_emissions = ?, badge = ?, calculation_date = NOW()
+        WHERE user_id = ?;
+    `;
+
+    db.query(sqlQuery, [carEmission, badge, userId], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Database update failed' });
+        }
+
+        res.status(200).json({ message: 'Emission data saved successfully!' });
+    });
 });
 
 
