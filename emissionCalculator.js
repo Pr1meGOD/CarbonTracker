@@ -5,6 +5,7 @@ const mysql = require('mysql2'); // Added MySQL
 const bcrypt = require('bcrypt'); // For password hashing
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
+const PORT = process.env.PORT || 5000;
 const router = express.Router();
 
 app.use(cors());
