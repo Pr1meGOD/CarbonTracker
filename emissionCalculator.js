@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 5000;
 const cors = require('cors');
 const mysql = require('mysql2'); // Added MySQL
 const bcrypt = require('bcrypt'); // For password hashing
+const validator = require('validator');
 
 app.use(cors());
 app.use(express.json());
@@ -18,10 +19,24 @@ const db = mysql.createPool({
 
 // Route: User Registration
 app.post('/api/register', async (req, res) => {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
     if (!username || !password) {
         return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    // Sanitize inputs
+    username = username.trim();
+    password = password.trim();
+
+    // Validate email
+    if (!validator.isEmail(username)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Validate password strength (e.g., minimum length of 6 characters)
+    if (password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
     try {
@@ -46,6 +61,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
+
 // Route: User Login
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
@@ -55,7 +71,7 @@ app.post('/api/login', (req, res) => {
     }
 
     db.query(
-        'SELECT * FROM test_users WHERE username = ?',
+        'SELECT * FROM test_Users WHERE username = ?',
         [username],
         async (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
@@ -65,16 +81,21 @@ app.post('/api/login', (req, res) => {
             }
 
             const user = results[0];
-            const isPasswordValid = await bcrypt.compare(password, user.password);
 
-            if (!isPasswordValid) {
-                return res.status(401).json({ error: 'Invalid password' });
+            try {
+                const isPasswordValid = await bcrypt.compare(password, user.password);
+                if (!isPasswordValid) {
+                    return res.status(401).json({ error: 'Invalid password' });
+                }
+
+                res.status(200).json({ message: 'Logged in successfully', userId: user.id });
+            } catch (error) {
+                res.status(500).json({ error: 'Error during authentication' });
             }
-
-            res.status(200).json({ message: 'Logged in successfully', userId: user.id });
         }
     );
 });
+
 
 // Function to calculate emissions for bike, car, and home (unchanged from your code)
 function calculateBikeEmission(cc, monthlyMileage) {
