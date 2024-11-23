@@ -55,7 +55,7 @@ app.post('/api/login', (req, res) => {
     }
 
     db.query(
-        'SELECT * FROM Users WHERE username = ?',
+        'SELECT * FROM test_users WHERE username = ?',
         [username],
         async (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
