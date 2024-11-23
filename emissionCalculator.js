@@ -12,20 +12,51 @@ app.use(express.json());
 
 const secretKey = 'your_secret_key';
 
-// Middleware to authenticate user requests
-const authenticateUser = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ error: 'Authorization token required' });
+const authMiddleware = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader) {
+        return res.status(401).json({ error: 'Authorization token required.' });
     }
-    try {
-        const decoded = jwt.verify(token, secretKey);
-        req.user = decoded;
+
+    const token = authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
+
+    jwt.verify(token, secretKey, (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: 'Invalid or expired token.' });
+        }
+
+        req.user = user; // Attach user info from token to request object
         next();
-    } catch (err) {
-        return res.status(403).json({ error: 'Invalid or expired token' });
-    }
+    });
 };
+
+// Route for saving car emission
+router.post('/api/save-car-emission', authMiddleware, (req, res) => {
+    const { carEmission, badge } = req.body;
+    const userId = req.user.userId; // Extracted from the decoded JWT in the authMiddleware
+
+    if (!carEmission || !badge) {
+        return res.status(400).json({ error: 'Car emission and badge are required.' });
+    }
+
+    const query = `
+        UPDATE test_Users 
+        SET car_emission = ?, badge = ?, last_calculated_date = NOW() 
+        WHERE id = ?
+    `;
+
+    db.query(query, [carEmission, badge, userId], (err, result) => {
+        if (err) {
+            console.error('Error updating database:', err);
+            return res.status(500).json({ error: 'Failed to save data.' });
+        }
+
+        res.status(200).json({ message: 'Car emission data saved successfully.' });
+    });
+});
+
+module.exports = router;
 
 // Configure MySQL Connection
 const db = mysql.createPool({
