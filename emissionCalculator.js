@@ -185,6 +185,48 @@ app.post('/api/calculateHomeEmission', (req, res) => {
     res.json({ homeEmission, badge });
 });
 
+
+
+// Route: Store Emission Data
+app.post('/api/storeEmission', async (req, res) => {
+    const { user_id, emissionType, emissionValue, badge } = req.body;
+
+    if (!user_id || !emissionType || !emissionValue || !badge) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    try {
+        // Prepare SQL query based on the emission type
+        let column;
+        if (emissionType === 'car') column = 'car_emissions';
+        else if (emissionType === 'bike') column = 'bike_emissions';
+        else if (emissionType === 'household') column = 'household_emissions';
+        else return res.status(400).json({ error: 'Invalid emission type' });
+
+        const query = `
+            UPDATE test_Users
+            SET ${column} = ?, badge = ?, calculation_date = CURRENT_TIMESTAMP
+            WHERE user_id = ?
+        `;
+
+        // Execute the query
+        db.query(query, [emissionValue, badge, user_id], (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            res.status(200).json({ message: 'Emission data stored successfully' });
+        });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
