@@ -89,36 +89,28 @@ const loginUser = async (username, password) => {
   }
 };
 
-// Save car emissions
-const saveCarEmission = async (carEmission, badge) => {
-  const token = localStorage.getItem('authToken'); // Retrieve token from storage
 
-  if (!token) {
-      console.error('No authentication token found. Please log in.');
-      return;
-  }
 
-  try {
-      const response = await fetch('http://localhost:5000/api/save-car-emission', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`, // Send token in Authorization header
-          },
-          body: JSON.stringify({ carEmission, badge }),
-      });
+const saveEmissionData = async (emissionType, emissionValue, badge) => {
+  const token = localStorage.getItem('token'); // Retrieve the JWT token
 
-      const data = await response.json();
+  const response = await fetch('http://localhost:5000/api/storeEmission', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+          emissionType,
+          emissionValue,
+          badge
+      })
+  });
 
-      if (response.ok) {
-          console.log('Emission data saved successfully:', data);
-      } else {
-          console.error('Error saving data:', data.error);
-      }
-  } catch (error) {
-      console.error('Something went wrong:', error);
-  }
+  const result = await response.json();
+  console.log(result); // Log the result or handle the UI update
 };
+
 
 
   
