@@ -30,7 +30,8 @@ const AuthenticationPage = () => {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
+          // Use 'username' instead of 'email' to match backend field names
+          body: JSON.stringify({ username: email, password }),
         }
       );
   
@@ -56,12 +57,13 @@ const AuthenticationPage = () => {
           }, 2000);
         }
       } else {
-        setError(data.message || 'An error occurred during authentication.');
+        setError(data.error || 'An error occurred during authentication.');
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
     }
   };
+  
   
   
 
