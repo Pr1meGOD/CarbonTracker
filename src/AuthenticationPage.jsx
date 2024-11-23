@@ -66,53 +66,60 @@ const AuthenticationPage = () => {
     }
 };
   
-const login = async (email, password) => {
+
+// Save JWT token on login
+const loginUser = async (username, password) => {
   try {
       const response = await fetch('http://localhost:5000/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
+
       if (response.ok) {
-          localStorage.setItem('authToken', data.token); // Save token
-          console.log('Login successful!');
+          console.log('Login successful:', data);
+          localStorage.setItem('authToken', data.token); // Save JWT token in localStorage
       } else {
           console.error('Login failed:', data.error);
       }
-  } catch (err) {
-      console.error('Something went wrong:', err);
+  } catch (error) {
+      console.error('Error logging in:', error);
   }
 };
 
-
+// Save car emissions
 const saveCarEmission = async (carEmission, badge) => {
   const token = localStorage.getItem('authToken'); // Retrieve token from storage
+
+  if (!token) {
+      console.error('No authentication token found. Please log in.');
+      return;
+  }
 
   try {
       const response = await fetch('http://localhost:5000/api/save-car-emission', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              'Authorization': `Bearer ${token}`, // Send token in Authorization header
           },
-          body: JSON.stringify({ carEmission, badge })
+          body: JSON.stringify({ carEmission, badge }),
       });
 
       const data = await response.json();
+
       if (response.ok) {
           console.log('Emission data saved successfully:', data);
       } else {
           console.error('Error saving data:', data.error);
       }
-  } catch (err) {
-      console.error('Something went wrong:', err);
+  } catch (error) {
+      console.error('Something went wrong:', error);
   }
 };
 
-// Example usage
-saveCarEmission(0.7725, 'A');
 
   
 
