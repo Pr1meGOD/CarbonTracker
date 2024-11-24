@@ -6,16 +6,16 @@ import bg from "./assets/Images/home_page_bg.jpg";
 
 
 const AccurateTrackingV3 = () => {
-  const [activeCategory, setActiveCategory] = useState('home');
+  const [activeCategory, setActiveCategory] = useState("home");
   const [formData, setFormData] = useState({
-    electricity: '',
-    heating: '',
-    carMileage: '',
-    carFuelType: '',
-    bikeMileage: '',
-    bikeCC: '',
-    meatConsumption: '',
-    flights: '',
+    electricity: "",
+    heating: "",
+    carMileage: "",
+    carFuelType: "",
+    bikeMileage: "",
+    bikeCC: "",
+    meatConsumption: "",
+    flights: "",
   });
   const [results, setResults] = useState({
     home: null,
@@ -31,9 +31,9 @@ const AccurateTrackingV3 = () => {
 
   // Ensure user is logged in using JWT
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (!token) {
-      navigate('/AuthenticationPage'); // Redirect to login if no token found
+      navigate("/AuthenticationPage"); // Redirect to login if no token found
     }
   }, [navigate]);
 
@@ -45,97 +45,58 @@ const AccurateTrackingV3 = () => {
     }));
   };
 
-  // Function to save emission data to the backend
-  async function saveEmissions(calculatedValues) {
-    const {
-      carEmissions,
-      bikeEmissions,
-      householdEmissions,
-      carBadge,
-      bikeBadge,
-      homeBadge,
-    } = calculatedValues;
-
-    // Prepare the request body dynamically
-    const data = {};
-    if (carEmissions !== undefined) data.carEmissions = carEmissions;
-    if (bikeEmissions !== undefined) data.bikeEmissions = bikeEmissions;
-    if (householdEmissions !== undefined) data.householdEmissions = householdEmissions;
-    if (carBadge !== undefined) data.carBadge = carBadge;
-    if (bikeBadge !== undefined) data.bikeBadge = bikeBadge;
-    if (homeBadge !== undefined) data.homeBadge = homeBadge;
-
-    // Check if there's any data to send
-    if (Object.keys(data).length === 0) {
-      console.error('No data to save.');
-      return;
-    }
-
+  // Save emissions data to the backend
+  async function saveEmissions(dataToSave) {
     try {
-      // Send the data to the backend API
-      const response = await fetch('/api/storeEmissions', {
-        method: 'POST',
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        console.error("No authentication token found.");
+        return;
+      }
+
+      const response = await fetch("/api/storeEmissions", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Include auth token if required
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(dataToSave),
       });
 
-      // Handle the API response
       const result = await response.json();
       if (response.ok) {
-        console.log('Emission data saved successfully:', result.message);
+        console.log("Emission data saved successfully:", result.message);
       } else {
-        console.error('Failed to save emission data:', result.error);
+        console.error("Failed to save emission data:", result.error);
       }
     } catch (error) {
-      console.error('Error while saving emissions:', error);
+      console.error("Error while saving emissions:", error);
     }
   }
 
-  // Replace getAuthToken with your logic to retrieve the user's auth token
-  function getAuthToken() {
-    return localStorage.getItem('authToken');
-  }
-
-  const handleRedirectToTips = () => {
-    navigate('/CarbonReductionTips');
-  };
-
-  setResults((prevResults) => ({
-    ...prevResults,
-    [activeCategory]: {
-      homeEmission: response.data.homeEmission,
-      carEmission: response.data.carEmission,
-      bikeEmission: response.data.bikeEmission,
-      badge: response.data.badge,
-    },
-  }));
-  
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      console.error("No authentication token found.");
-      return;
-    }
-
     try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        console.error("No authentication token found.");
+        return;
+      }
+
       let response;
       const headers = { Authorization: `Bearer ${token}` };
-      let badge, emissionValue; // Declare badge and emissionValue here to ensure they're available
+      let badge, emissionValue;
 
-      if (activeCategory === 'bike') {
+      if (activeCategory === "bike") {
         response = await axios.post(
-          'http://localhost:5000/api/calculateBikeEmission',
+          "http://localhost:5000/api/calculateBikeEmission",
           { cc: formData.bikeCC, monthlyMileage: formData.bikeMileage },
           { headers }
         );
-        badge = response.data.badge;  // Assign badge from response
-        emissionValue = response.data.emissionValue;  // Assign emission value
+        badge = response.data.badge;
+        emissionValue = response.data.emissionValue;
+
         setResults((prevResults) => ({
           ...prevResults,
           bike: {
@@ -144,19 +105,20 @@ const AccurateTrackingV3 = () => {
           },
         }));
 
-        // Store only bike emission data
+        // Save bike emissions
         await saveEmissions({
           bikeEmissions: emissionValue,
-          bikeBadge: badge,
+          bike_badge: badge,
         });
-      } else if (activeCategory === 'car') {
+      } else if (activeCategory === "car") {
         response = await axios.post(
-          'http://localhost:5000/api/calculateCarEmission',
+          "http://localhost:5000/api/calculateCarEmission",
           { carMileage: formData.carMileage, carFuelType: formData.carFuelType },
           { headers }
         );
-        badge = response.data.badge;  // Assign badge from response
-        emissionValue = response.data.emissionValue;  // Assign emission value
+        badge = response.data.badge;
+        emissionValue = response.data.emissionValue;
+
         setResults((prevResults) => ({
           ...prevResults,
           car: {
@@ -165,19 +127,23 @@ const AccurateTrackingV3 = () => {
           },
         }));
 
-        // Store only car emission data
+        // Save car emissions
         await saveEmissions({
           carEmissions: emissionValue,
-          carBadge: badge,
+          car_badge: badge,
         });
-      } else if (activeCategory === 'home') {
+      } else if (activeCategory === "home") {
         response = await axios.post(
-          'http://localhost:5000/api/calculateHomeEmission',
-          { electricityUsage: formData.electricity, heatingUsage: formData.heating },
+          "http://localhost:5000/api/calculateHomeEmission",
+          {
+            electricityUsage: formData.electricity,
+            heatingUsage: formData.heating,
+          },
           { headers }
         );
-        badge = response.data.badge;  // Assign badge from response
-        emissionValue = response.data.emissionValue;  // Assign emission value
+        badge = response.data.badge;
+        emissionValue = response.data.emissionValue;
+
         setResults((prevResults) => ({
           ...prevResults,
           home: {
@@ -186,27 +152,25 @@ const AccurateTrackingV3 = () => {
           },
         }));
 
-        // Store only home emission data
+        // Save home emissions
         await saveEmissions({
-          householdEmissions: emissionValue,
-          homeBadge: badge,
+          household_emissions: emissionValue,
+          home_badge: badge,
         });
       }
 
-      // Show improvement tips if badge is 'B', 'C', or 'F'
+      // Show improvement tips based on badge
       setShowImprovementTip((prevTips) => ({
-        home: activeCategory === 'home' ? ['B', 'C', 'F'].includes(badge) : false,
-        car: activeCategory === 'car' ? ['B', 'C', 'F'].includes(badge) : false,
-        bike: activeCategory === 'bike' ? ['B', 'C', 'F'].includes(badge) : false,
+        ...prevTips,
+        [activeCategory]: ["B", "C", "F"].includes(badge),
       }));
 
-      // Redirect to the improvement tips page if needed
-      if (showImprovementTip[activeCategory]) {
-        handleRedirectToTips();
+      // Redirect to tips page if needed
+      if (["B", "C", "F"].includes(badge)) {
+        navigate("/CarbonReductionTips");
       }
-
     } catch (error) {
-      console.error('Error calculating emission:', error);
+      console.error("Error calculating emission:", error);
     }
   };
   
