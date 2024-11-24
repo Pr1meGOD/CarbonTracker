@@ -15,8 +15,8 @@ app.use(express.json());
 
 
 function authMiddleware(req, res, next) {
-    const token = req.header('Authorization')?.split(' ')[1];  // Extract token from 'Bearer token'
-    console.log('Received token:', token);  // Add this line to log the token
+    const token = req.header('Authorization')?.split(' ')[1];  
+    console.log('Received token:', token);  
 
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized: No token provided.' });
@@ -71,14 +71,6 @@ app.post('/api/login', (req, res) => {
 });
 
 
-jwt.verify(token, '1234', (err, decoded) => {
-    if (err) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
-    }
-   
-    req.user = decoded;  
-    next();  
-});
 
 
 
@@ -120,7 +112,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     });
 
     // Add the last_calculated_date update
-    updates.push('last_calculated_date = NOW()');
+    updates.push('calculation_date = NOW()');
 
     // Ensure we have updates to make
     if (updates.length === 1) { // Only `last_calculated_date` is being updated
