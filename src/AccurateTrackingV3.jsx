@@ -159,30 +159,34 @@ const AccurateTrackingV3 = () => {
         });
       }
 
+      setResults((prevResults) => ({
+        ...prevResults,
+        [activeCategory]: {
+          homeEmission: response.data.homeEmission,
+          carEmission: response.data.carEmission,
+          bikeEmission: response.data.bikeEmission,
+          badge: response.data.badge,
+        },
+      }));
+
       // Show improvement tips based on badge
       setShowImprovementTip((prevTips) => ({
         ...prevTips,
         [activeCategory]: ["B", "C", "F"].includes(badge),
       }));
 
-      // Redirect to tips page if needed
-      if (["B", "C", "F"].includes(badge)) {
+      
+      const handleRedirectToTips = () => {
         navigate("/CarbonReductionTips");
-      }
+      };
+      
+      
     } catch (error) {
       console.error("Error calculating emission:", error);
     }
   };
   
-  setResults((prevResults) => ({
-    ...prevResults,
-    [activeCategory]: {
-      homeEmission: response.data.homeEmission,
-      carEmission: response.data.carEmission,
-      bikeEmission: response.data.bikeEmission,
-      badge: response.data.badge,
-    },
-  }));
+ 
 
   
 
