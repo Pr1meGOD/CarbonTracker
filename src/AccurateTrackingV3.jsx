@@ -50,6 +50,8 @@ const AccurateTrackingV3 = () => {
   };
 
   const handleSubmit = async (e) => {
+
+    
     e.preventDefault();
 
     const token = localStorage.getItem('authToken');
@@ -82,6 +84,8 @@ const AccurateTrackingV3 = () => {
         );
       }
 
+      
+
       const { badge } = response.data;
       setResults((prevResults) => ({
         ...prevResults,
@@ -98,6 +102,9 @@ const AccurateTrackingV3 = () => {
     }
   };
 
+
+  
+
   const categories = [
     { id: 'home', name: 'Home', icon: <Home className="h-6 w-6" /> },
     { id: 'car', name: 'Car', icon: <Car className="h-6 w-6" /> },
@@ -105,6 +112,9 @@ const AccurateTrackingV3 = () => {
     { id: 'food', name: 'Food', icon: <ShoppingBag className="h-6 w-6" /> },
     { id: 'flight', name: 'Flight', icon: <Plane className="h-6 w-6" /> },
   ];
+
+
+
 
   return (
     <div

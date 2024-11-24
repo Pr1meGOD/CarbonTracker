@@ -67,48 +67,52 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+
+
+
+
 app.post('/api/storeEmission', authMiddleware, async (req, res) => {
     const { emissionType, emissionValue, badge } = req.body;
     const userId = req.user.userId; // Extracted from the token
-  
-    console.log('Received emission data:', emissionType, emissionValue, badge);
-    console.log('User ID from token:', userId);
-  
+
     if (!emissionType || !emissionValue || !badge) {
-      return res.status(400).json({ error: 'All fields (emissionType, emissionValue, badge) are required' });
+        return res.status(400).json({ error: 'All fields (emissionType, emissionValue, badge) are required' });
     }
-  
+
+    // Determine which column to update based on emissionType
     let column;
     if (emissionType === 'car') column = 'car_emission';
     else if (emissionType === 'bike') column = 'bike_emission';
     else if (emissionType === 'household') column = 'home_emission';
     else return res.status(400).json({ error: 'Invalid emission type' });
-  
+
     const query = `
         UPDATE test_Users 
         SET ${column} = ?, badge = ?, last_calculated_date = NOW() 
         WHERE id = ?
     `;
-  
+
     try {
-      db.query(query, [emissionValue, badge, userId], (err, result) => {
-        if (err) {
-          console.error('Database error:', err);
-          return res.status(500).json({ error: 'Database error' });
-        }
-  
-        if (result.affectedRows === 0) {
-          return res.status(404).json({ error: 'User not found' });
-        }
-  
-        console.log('Emission data saved successfully:', result);
-        res.status(200).json({ message: 'Emission data saved successfully' });
-      });
+        db.query(query, [emissionValue, badge, userId], (err, result) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            res.status(200).json({ message: 'Emission data saved successfully' });
+        });
     } catch (err) {
-      console.error('Server error:', err);
-      res.status(500).json({ error: 'Server error' });
+        console.error('Server error:', err);
+        res.status(500).json({ error: 'Server error' });
     }
-  });
+});
+
+
+
   
 
 // User Registration Route
