@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Leaf, Home, Car, Bike, ShoppingBag, Plane } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Leaf, Home, Car, Bike, ShoppingBag, Plane } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import bg from "./assets/Images/home_page_bg.jpg";
-
 
 const AccurateTrackingV3 = () => {
   const [activeCategory, setActiveCategory] = useState("home");
@@ -43,6 +42,11 @@ const AccurateTrackingV3 = () => {
       ...prevState,
       [name]: value,
     }));
+  };
+
+  // Function to redirect to tips page
+  const handleRedirectToTips = () => {
+    navigate("/CarbonReductionTips");
   };
 
   // Save emissions data to the backend
@@ -99,17 +103,10 @@ const AccurateTrackingV3 = () => {
 
         setResults((prevResults) => ({
           ...prevResults,
-          bike: {
-            bikeEmission: emissionValue,
-            badge: badge,
-          },
+          bike: { bikeEmission: emissionValue, badge },
         }));
 
-        // Save bike emissions
-        await saveEmissions({
-          bikeEmissions: emissionValue,
-          bike_badge: badge,
-        });
+        await saveEmissions({ bikeEmissions: emissionValue, bike_badge: badge });
       } else if (activeCategory === "car") {
         response = await axios.post(
           "http://localhost:5000/api/calculateCarEmission",
@@ -121,17 +118,10 @@ const AccurateTrackingV3 = () => {
 
         setResults((prevResults) => ({
           ...prevResults,
-          car: {
-            carEmission: emissionValue,
-            badge: badge,
-          },
+          car: { carEmission: emissionValue, badge },
         }));
 
-        // Save car emissions
-        await saveEmissions({
-          carEmissions: emissionValue,
-          car_badge: badge,
-        });
+        await saveEmissions({ carEmissions: emissionValue, car_badge: badge });
       } else if (activeCategory === "home") {
         response = await axios.post(
           "http://localhost:5000/api/calculateHomeEmission",
@@ -146,17 +136,10 @@ const AccurateTrackingV3 = () => {
 
         setResults((prevResults) => ({
           ...prevResults,
-          home: {
-            homeEmission: emissionValue,
-            badge: badge,
-          },
+          home: { homeEmission: emissionValue, badge },
         }));
 
-        // Save home emissions
-        await saveEmissions({
-          household_emissions: emissionValue,
-          home_badge: badge,
-        });
+        await saveEmissions({ household_emissions: emissionValue, home_badge: badge });
       }
 
       setResults((prevResults) => ({
@@ -175,29 +158,22 @@ const AccurateTrackingV3 = () => {
         [activeCategory]: ["B", "C", "F"].includes(badge),
       }));
 
-      
-      const handleRedirectToTips = () => {
-        navigate("/CarbonReductionTips");
-      };
-      
-      
+      // Redirect to tips page if necessary
+      if (["B", "C", "F"].includes(badge)) {
+        handleRedirectToTips();
+      }
     } catch (error) {
       console.error("Error calculating emission:", error);
     }
   };
-  
- 
-
-  
 
   const categories = [
-    { id: 'home', name: 'Home', icon: <Home className="h-6 w-6" /> },
-    { id: 'car', name: 'Car', icon: <Car className="h-6 w-6" /> },
-    { id: 'bike', name: 'Bike', icon: <Bike className="h-6 w-6" /> },
-    { id: 'food', name: 'Food', icon: <ShoppingBag className="h-6 w-6" /> },
-    { id: 'flight', name: 'Flight', icon: <Plane className="h-6 w-6" /> },
+    { id: "home", name: "Home", icon: <Home className="h-6 w-6" /> },
+    { id: "car", name: "Car", icon: <Car className="h-6 w-6" /> },
+    { id: "bike", name: "Bike", icon: <Bike className="h-6 w-6" /> },
+    { id: "food", name: "Food", icon: <ShoppingBag className="h-6 w-6" /> },
+    { id: "flight", name: "Flight", icon: <Plane className="h-6 w-6" /> },
   ];
-
 
 
 
@@ -385,12 +361,10 @@ const AccurateTrackingV3 = () => {
                 <p className="text-yellow-800 font-medium">
                   Consider making lifestyle adjustments to improve your carbon emission score. Click the button below for tips.
                 </p>
-                <button
-                  onClick={handleRedirectToTips}
-                  className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                >
-                  View Carbon Reduction Tips
-                </button>
+                <form onSubmit={handleSubmit}>
+      {/* Add form fields and category-specific inputs here */}
+      <button type="submit">Calculate Emissions</button>
+    </form>
               </div>
             )}
           </div>

@@ -13,25 +13,24 @@ app.use(express.json());
 
 const secretKey = 'your_secret_key';
 
-// Middleware for authenticating requests and attaching user data from JWT
-const authMiddleware = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
 
-    if (!authHeader) {
-        return res.status(401).json({ error: 'Authorization token required.' });
+const authMiddleware = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized: No token provided.' });
     }
 
-    const token = authHeader.split(' ')[1]; // Extract the token part
-
-    jwt.verify(token, secretKey, (err, user) => {
-        if (err) {
-            return res.status(403).json({ error: 'Invalid or expired token.' });
-        }
-
-        req.user = user; // Attach user info from the token to the request object
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = { userId: decoded.userId }; // Attach user ID to the request
         next();
-    });
+    } catch (err) {
+        console.error('Invalid token:', err);
+        res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+    }
 };
+
+
 
 // Login Route: Verifies user credentials and returns a JWT token
 app.post('/api/login', (req, res) => {
@@ -82,47 +81,36 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     } = req.body;
 
     // The user ID is extracted from the JWT token
+    if (!req.user || !req.user.userId) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid or missing user information.' });
+    }
     const userId = req.user.userId;
 
-    // Check which fields are present in the request
+    // Validate input fields
+    const validFields = [
+        { key: 'car_emissions', value: carEmissions },
+        { key: 'bike_emissions', value: bikeEmissions },
+        { key: 'household_emissions', value: householdEmissions },
+        { key: 'car_badge', value: carBadge },
+        { key: 'bike_badge', value: bikeBadge },
+        { key: 'home_badge', value: homeBadge },
+    ];
+
     const updates = [];
     const values = [];
 
-    if (carEmissions !== undefined) {
-        updates.push('car_emissions = ?');
-        values.push(carEmissions);
-    }
-
-    if (bikeEmissions !== undefined) {
-        updates.push('bike_emissions = ?');
-        values.push(bikeEmissions);
-    }
-
-    if (householdEmissions !== undefined) {
-        updates.push('household_emissions = ?');
-        values.push(householdEmissions);
-    }
-
-    if (carBadge !== undefined) {
-        updates.push('car_badge = ?');
-        values.push(carBadge);
-    }
-
-    if (bikeBadge !== undefined) {
-        updates.push('bike_badge = ?');
-        values.push(bikeBadge);
-    }
-
-    if (homeBadge !== undefined) {
-        updates.push('home_badge = ?');
-        values.push(homeBadge);
-    }
+    validFields.forEach((field) => {
+        if (field.value !== undefined) {
+            updates.push(`${field.key} = ?`);
+            values.push(field.value);
+        }
+    });
 
     // Add the last_calculated_date update
     updates.push('last_calculated_date = NOW()');
 
     // Ensure we have updates to make
-    if (updates.length === 1) {
+    if (updates.length === 1) { // Only `last_calculated_date` is being updated
         return res.status(400).json({ error: 'No valid data to update.' });
     }
 
@@ -132,7 +120,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         SET ${updates.join(', ')}
         WHERE id = ?
     `;
-    values.push(userId);
+    values.push(userId); // Add userId as the final value for WHERE condition
 
     // Execute the query
     db.query(query, values, (err, result) => {
@@ -148,6 +136,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         res.status(200).json({ message: 'Emission data saved successfully.' });
     });
 });
+
 
 
 
