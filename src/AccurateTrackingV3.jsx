@@ -128,8 +128,6 @@ const AccurateTrackingV3 = () => {
       console.error('Error calculating emission:', error);
     }
   };
-};
-
   
 
   
