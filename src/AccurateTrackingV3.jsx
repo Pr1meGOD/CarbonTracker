@@ -108,7 +108,10 @@ const AccurateTrackingV3 = () => {
 
         setResults((prevResults) => ({
           ...prevResults,
-          bike: { bikeEmission: emissionValue, badge },
+          bike: {
+            bikeEmission: response.data.bikeEmission,
+            badge: response.data.badge,
+          },
         }));
 
         dataToSave = {
@@ -117,6 +120,8 @@ const AccurateTrackingV3 = () => {
         };
 
         await saveEmissions(dataToSave);
+
+
       } else if (activeCategory === "car") {
         response = await axios.post(
           "http://localhost:5000/api/calculateCarEmission",
@@ -128,7 +133,10 @@ const AccurateTrackingV3 = () => {
 
         setResults((prevResults) => ({
           ...prevResults,
-          car: { carEmission: emissionValue, badge },
+          car: {
+            carEmission: response.data.carEmission,
+            badge: response.data.badge,
+          },
         }));
 
         dataToSave = {
@@ -149,11 +157,14 @@ const AccurateTrackingV3 = () => {
         );
         badge = response.data.badge;
         emissionValue = response.data.emissionValue;
-
         setResults((prevResults) => ({
           ...prevResults,
-          home: { homeEmission: emissionValue, badge },
+          home: {
+            homeEmission: response.data.homeEmission,
+            badge: response.data.badge,
+          },
         }));
+      
 
         dataToSave = {
           household_emissions: emissionValue,  // Using the fetched emission value
@@ -350,17 +361,18 @@ const AccurateTrackingV3 = () => {
   <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
     <p>
       Emission Result:{" "}
-      {activeCategory === "home" && results.home?.homeEmission
+      {activeCategory === "home" && results.home?.homeEmission !== undefined
         ? `${results.home.homeEmission} metric tons CO₂`
-        : activeCategory === "car" && results.car?.carEmission
+        : activeCategory === "car" && results.car?.carEmission !== undefined
         ? `${results.car.carEmission} metric tons CO₂`
-        : activeCategory === "bike" && results.bike?.bikeEmission
+        : activeCategory === "bike" && results.bike?.bikeEmission !== undefined
         ? `${results.bike.bikeEmission} metric tons CO₂`
         : "No data available"}
     </p>
     <p>Badge: {results[activeCategory]?.badge || "No badge available"}</p>
   </div>
 )}
+
 
 
 
