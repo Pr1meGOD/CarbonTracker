@@ -72,7 +72,7 @@ app.post('/api/login', (req, res) => {
 
 // Route: Store Emissions (Car, Bike, and Household)
 app.post('/api/storeEmissions', authMiddleware, (req, res) => {
-    const { carEmission, bikeEmission, homeEmission, badge } = req.body;
+    const { carEmissions, bikeEmissions, homeEmissions, badge } = req.body;
 
     // The user ID is extracted from the JWT token
     const userId = req.user.userId;
@@ -81,16 +81,16 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     const fieldsToUpdate = [];
     const values = [];
 
-    if (carEmission !== undefined) {
-        fieldsToUpdate.push('car_emission = ?');
+    if (carEmissions !== undefined) {
+        fieldsToUpdate.push('car_emissions = ?');
         values.push(carEmission);
     }
-    if (bikeEmission !== undefined) {
-        fieldsToUpdate.push('bike_emission = ?');
+    if (bikeEmissions !== undefined) {
+        fieldsToUpdate.push('bike_emissions = ?');
         values.push(bikeEmission);
     }
-    if (homeEmission !== undefined) {
-        fieldsToUpdate.push('household_emission = ?');
+    if (homeEmissions !== undefined) {
+        fieldsToUpdate.push('household_emissions = ?');
         values.push(homeEmission);
     }
     if (badge !== undefined) {
