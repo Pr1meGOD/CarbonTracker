@@ -61,7 +61,7 @@ const AccurateTrackingV3 = () => {
         return;
       }
 
-      const response = await fetch("/api/storeEmissions", {
+      const response = await fetch("http://localhost:5000/api/storeEmissions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
