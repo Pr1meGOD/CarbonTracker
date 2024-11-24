@@ -158,10 +158,7 @@ const AccurateTrackingV3 = () => {
         [activeCategory]: ["B", "C", "F"].includes(badge),
       }));
 
-      // Redirect to tips page if necessary
-      if (["B", "C", "F"].includes(badge)) {
-        handleRedirectToTips();
-      }
+      
     } catch (error) {
       console.error("Error calculating emission:", error);
     }
@@ -327,12 +324,15 @@ const AccurateTrackingV3 = () => {
                   </div>
                 </>
               )}
+              
               <button
                 type="submit"
                 className="w-full px-6 py-3 rounded-md bg-green-500 text-white hover:bg-green-700 transition-colors"
               >
                 Calculate Emission
               </button>
+
+              
             </form>
   
           {/* Emission result display */}
@@ -365,6 +365,21 @@ const AccurateTrackingV3 = () => {
       {/* Add form fields and category-specific inputs here */}
       <button type="submit">Calculate Emissions</button>
     </form>
+              </div>
+            )}
+
+            {/* Show improvement tip */}
+            {showImprovementTip[activeCategory] && (
+              <div className="mt-6 bg-yellow-100 p-4 rounded-lg text-center">
+                <p className="text-yellow-800 font-medium">
+                  Consider making lifestyle adjustments to improve your carbon emission score. Click the button below for tips.
+                </p>
+                <button
+                  onClick={handleRedirectToTips}
+                  className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                >
+                  View Carbon Reduction Tips
+                </button>
               </div>
             )}
           </div>
