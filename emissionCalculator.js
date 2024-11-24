@@ -70,48 +70,68 @@ app.post('/api/login', (req, res) => {
 
 
 
-// Route: Store Emissions (Car, Bike, and Household)
 app.post('/api/storeEmissions', authMiddleware, (req, res) => {
-    const { carEmissions, bikeEmissions, homeEmissions, badge } = req.body;
+    const {
+        carEmission,
+        bikeEmission,
+        homeEmission,
+        carBadge,
+        bikeBadge,
+        homeBadge,
+    } = req.body;
 
     // The user ID is extracted from the JWT token
     const userId = req.user.userId;
 
-    // Prepare dynamic query parts based on the provided data
-    const fieldsToUpdate = [];
+    // Check which fields are present in the request
+    const updates = [];
     const values = [];
 
-    if (carEmissions !== undefined) {
-        fieldsToUpdate.push('car_emissions = ?');
+    if (carEmission !== undefined) {
+        updates.push('car_emission = ?');
         values.push(carEmission);
     }
-    if (bikeEmissions !== undefined) {
-        fieldsToUpdate.push('bike_emissions = ?');
+
+    if (bikeEmission !== undefined) {
+        updates.push('bike_emission = ?');
         values.push(bikeEmission);
     }
-    if (homeEmissions !== undefined) {
-        fieldsToUpdate.push('household_emissions = ?');
+
+    if (homeEmission !== undefined) {
+        updates.push('household_emission = ?');
         values.push(homeEmission);
     }
-    if (badge !== undefined) {
-        fieldsToUpdate.push('badge = ?');
-        values.push(badge);
+
+    if (carBadge !== undefined) {
+        updates.push('car_badge = ?');
+        values.push(carBadge);
     }
 
-    // Check if there are fields to update
-    if (fieldsToUpdate.length === 0) {
-        return res.status(400).json({ error: 'No data provided to update.' });
+    if (bikeBadge !== undefined) {
+        updates.push('bike_badge = ?');
+        values.push(bikeBadge);
     }
 
-    // Add the user ID to the values array for the WHERE clause
-    values.push(userId);
+    if (homeBadge !== undefined) {
+        updates.push('home_badge = ?');
+        values.push(homeBadge);
+    }
 
-    // Construct the dynamic query
+    // Add the last_calculated_date update
+    updates.push('last_calculated_date = NOW()');
+
+    // Ensure we have updates to make
+    if (updates.length === 1) {
+        return res.status(400).json({ error: 'No valid data to update.' });
+    }
+
+    // Finalize the query
     const query = `
         UPDATE test_Users
-        SET ${fieldsToUpdate.join(', ')}, last_calculated_date = NOW()
+        SET ${updates.join(', ')}
         WHERE id = ?
     `;
+    values.push(userId);
 
     // Execute the query
     db.query(query, values, (err, result) => {
@@ -127,6 +147,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         res.status(200).json({ message: 'Emission data saved successfully.' });
     });
 });
+
 
 
 
