@@ -70,47 +70,38 @@ app.post('/api/login', (req, res) => {
 
 
 
-app.post('/api/storeEmission', authMiddleware, async (req, res) => {
-    const { emissionType, emissionValue, badge } = req.body;
-    const userId = req.user.userId; // Extracted from the token
+app.post('/api/storeEmissions', authMiddleware, (req, res) => {
+    const { carEmission, bikeEmission, homeEmission, badge } = req.body;
 
-    // Validate input
-    if (!emissionType || !emissionValue || !badge) {
-        return res.status(400).json({ error: 'All fields (emissionType, emissionValue, badge) are required' });
+    // The user ID is extracted from the JWT token
+    const userId = req.user.userId;
+
+    if (!carEmission || !bikeEmission || !homeEmission || !badge) {
+        return res.status(400).json({ error: 'All emission values and badge are required.' });
     }
 
-    // Determine the column to update based on emissionType
-    let column;
-    if (emissionType === 'car') column = 'car_emission';
-    else if (emissionType === 'bike') column = 'bike_emission';
-    else if (emissionType === 'home') column = 'home_emission';
-    else return res.status(400).json({ error: 'Invalid emission type' });
-
+    // SQL Query to update the emissions for the user
     const query = `
         UPDATE test_Users
-        SET ${column} = ?, badge = ?, last_calculated_date = NOW()
+        SET car_emission = ?, bike_emission = ?, household_emission = ?, badge = ?, last_calculated_date = NOW()
         WHERE id = ?
     `;
 
-    try {
-        // Execute the query to update the database
-        db.query(query, [emissionValue, badge, userId], (err, result) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
+    // Execute the query
+    db.query(query, [carEmission, bikeEmission, homeEmission, badge, userId], (err, result) => {
+        if (err) {
+            console.error('Error updating database:', err);
+            return res.status(500).json({ error: 'Failed to save emission data.' });
+        }
 
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ error: 'User not found' });
-            }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
 
-            res.status(200).json({ message: 'Emission data saved successfully' });
-        });
-    } catch (err) {
-        console.error('Server error:', err);
-        res.status(500).json({ error: 'Server error' });
-    }
+        res.status(200).json({ message: 'Emission data saved successfully.' });
+    });
 });
+
 
 
   

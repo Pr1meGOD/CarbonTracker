@@ -93,8 +93,6 @@ const AccurateTrackingV3 = () => {
           badge: response.data.badge,
         },
       }));
-      
-
 
       // Show improvement tips if badge is 'B', 'C', or 'F'
       setShowImprovementTip((prevTips) => ({
@@ -103,31 +101,35 @@ const AccurateTrackingV3 = () => {
         bike: activeCategory === 'bike' ? ['B', 'C', 'F'].includes(badge) : false,
       }));
 
-      // Send the emission data to be stored
-      const storeResponse = await fetch('http://localhost:5000/api/storeEmission', {
+      // ** New Section: Storing All Emissions Together **
+      const allEmissionsResponse = await fetch('http://localhost:5000/api/storeEmissions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          emissionType: activeCategory, // Send the correct emission type
-          emissionValue,  // Send calculated emission value
-          badge,  // Send the badge
+          carEmission: results.car ? results.car.carEmission : null,
+          bikeEmission: results.bike ? results.bike.bikeEmission : null,
+          homeEmission: results.home ? results.home.homeEmission : null,
+          badge: results.home ? results.home.badge : badge, // Default to the last calculated badge
         }),
       });
 
-      const storeData = await storeResponse.json();
-      if (storeData.error) {
-        console.error('Error storing emission data:', storeData.error);
+      const allEmissionsData = await allEmissionsResponse.json();
+      if (allEmissionsResponse.ok) {
+        console.log('All emission data stored successfully:', allEmissionsData);
       } else {
-        console.log('Emission data stored successfully');
+        console.error('Error storing all emission data:', allEmissionsData.error);
       }
+      // ** End of New Section **
 
     } catch (error) {
       console.error('Error calculating emission:', error);
     }
   };
+};
+
   
 
   
