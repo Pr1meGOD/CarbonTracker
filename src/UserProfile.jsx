@@ -26,9 +26,9 @@ const UserProfile = ({ user }) => {
       const data = await fetchUserEmissionData();
       setUserData(data);
     };
-
+    
     loadData();
-  }, []);
+  }), [];
 
   return (
     <div className="min-h-screen w-screen flex flex-col bg-gray-100 p-4">
@@ -57,17 +57,19 @@ const UserProfile = ({ user }) => {
           </div>
 
           <button
-            className="mt-4 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-700 transition-colors"
-            onClick={() => {
-                <Link to="/accurateTrackingV3"></Link> 
-            }}
-          >
-            Track More Emissions
-          </button>
+  className="mt-4 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-700 transition-colors"
+  onClick={() => (window.location.href = "/AccurateTrackingV3")}
+>
+  Track More Emissions
+</button>
+
+
+  
+
         </div>
       </main>
     </div>
   );
-};
+}
 
 export default UserProfile;
