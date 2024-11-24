@@ -64,6 +64,10 @@ const AuthenticationPage = () => {
     } catch (err) {
       setError('Something went wrong. Please try again.');
     }
+
+    // Function to fetch the JWT token from localStorage
+const getToken = () => localStorage.getItem('authToken');
+
   };
 
   // Function to fetch the JWT token from localStorage
