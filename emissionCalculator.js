@@ -12,8 +12,13 @@ const secretKey = '1234';
 app.use(cors());
 app.use(express.json());
 
-
-
+app.use(
+    cors({
+      origin: 'http://localhost:3000', // Replace with your frontend URL
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      credentials: true, // Allow cookies if needed
+    })
+  );
 function authMiddleware(req, res, next) {
     const token = req.header('Authorization')?.split(' ')[1];  
     console.log('Received token:', token);  
