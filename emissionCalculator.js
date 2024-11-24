@@ -68,7 +68,7 @@ app.post('/api/login', (req, res) => {
 });
 
 // Route: Store Emission Data (Authenticated)
-app.post('/api/storeEmission', authMiddleware, (req, res) => {
+app.post('/api/storeEmission', authMiddleware, async (req, res) => {
     const { emissionType, emissionValue, badge } = req.body;
     const userId = req.user.userId; // Extracted from the token
 
@@ -77,31 +77,46 @@ app.post('/api/storeEmission', authMiddleware, (req, res) => {
     }
 
     // Determine the column to update based on the emission type
-    let column;
-    if (emissionType === 'car') column = 'car_emission';
-    else if (emissionType === 'bike') column = 'bike_emission';
-    else if (emissionType === 'household') column = 'home_emission';
-    else return res.status(400).json({ error: 'Invalid emission type' });
+    let emissionColumn, badgeColumn;
+    if (emissionType === 'car') {
+        emissionColumn = 'car_emission';
+        badgeColumn = 'car_badge';
+    } else if (emissionType === 'bike') {
+        emissionColumn = 'bike_emission';
+        badgeColumn = 'bike_badge';
+    } else if (emissionType === 'household') {
+        emissionColumn = 'home_emission';
+        badgeColumn = 'home_badge';
+    } else {
+        return res.status(400).json({ error: 'Invalid emission type' });
+    }
 
     const query = `
         UPDATE test_Users 
-        SET ${column} = ?, badge = ?, last_calculated_date = NOW() 
+        SET ${emissionColumn} = ?, ${badgeColumn} = ?, last_calculated_date = NOW() 
         WHERE id = ?
     `;
 
-    db.query(query, [emissionValue, badge, userId], (err, result) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
+    try {
+        // Execute the query to update the database
+        db.query(query, [emissionValue, badge, userId], (err, result) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'User not found' });
-        }
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
 
-        res.status(200).json({ message: 'Emission data saved successfully' });
-    });
+            res.status(200).json({ message: 'Emission data and badge saved successfully' });
+        });
+    } catch (err) {
+        console.error('Server error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
 });
+
 
 // User Registration Route
 app.post('/api/register', async (req, res) => {
