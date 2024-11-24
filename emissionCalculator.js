@@ -80,30 +80,31 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         carEmissions,
         bikeEmissions,
         householdEmissions,
-        carBadge,
-        bikeBadge,
-        homeBadge,
+        car_Badge,
+        bike_Badge,
+        home_Badge,
     } = req.body;
 
-    // The user ID is extracted from the JWT token
+    // Check if user information is extracted properly from the JWT
     if (!req.user || !req.user.userId) {
         return res.status(401).json({ error: 'Unauthorized: Invalid or missing user information.' });
     }
     const userId = req.user.userId;
 
-    // Validate input fields
+    // Map valid input fields to database column names
     const validFields = [
         { key: 'car_emissions', value: carEmissions },
         { key: 'bike_emissions', value: bikeEmissions },
         { key: 'household_emissions', value: householdEmissions },
-        { key: 'car_badge', value: carBadge },
-        { key: 'bike_badge', value: bikeBadge },
-        { key: 'home_badge', value: homeBadge },
+        { key: 'car_badge', value: car_Badge },
+        { key: 'bike_badge', value: bike_Badge },
+        { key: 'home_badge', value: home_Badge },
     ];
 
     const updates = [];
     const values = [];
 
+    // Iterate through valid fields and prepare the query updates
     validFields.forEach((field) => {
         if (field.value !== undefined) {
             updates.push(`${field.key} = ?`);
@@ -111,33 +112,35 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         }
     });
 
-    // Add the last_calculated_date update
+    // Include the automatic update of the last_calculated_date column
     updates.push('calculation_date = NOW()');
 
-    // Ensure we have updates to make
-    if (updates.length === 1) { // Only `last_calculated_date` is being updated
+    // Check if there are fields to update (excluding only calculation_date)
+    if (updates.length === 1) {
         return res.status(400).json({ error: 'No valid data to update.' });
     }
 
-    // Finalize the query
+    // Construct the final SQL query
     const query = `
         UPDATE test_Users
         SET ${updates.join(', ')}
         WHERE id = ?
     `;
-    values.push(userId); // Add userId as the final value for WHERE condition
+    values.push(userId); // Add userId to the values array for WHERE condition
 
-    // Execute the query
+    // Execute the query with the prepared values
     db.query(query, values, (err, result) => {
         if (err) {
             console.error('Error updating database:', err);
             return res.status(500).json({ error: 'Failed to save emission data.' });
         }
 
+        // Handle case where the user ID does not exist in the database
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'User not found.' });
         }
 
+        // Successfully updated the emission data
         res.status(200).json({ message: 'Emission data saved successfully.' });
     });
 });

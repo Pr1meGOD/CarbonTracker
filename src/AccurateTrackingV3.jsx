@@ -354,19 +354,6 @@ const AccurateTrackingV3 = () => {
 
 
 
-            
-            {/* Show improvement tip */}
-            {showImprovementTip[activeCategory] && (
-              <div className="mt-6 bg-yellow-100 p-4 rounded-lg text-center">
-                <p className="text-yellow-800 font-medium">
-                  Consider making lifestyle adjustments to improve your carbon emission score. Click the button below for tips.
-                </p>
-                <form onSubmit={handleSubmit}>
-      {/* Add form fields and category-specific inputs here */}
-      <button type="submit">Calculate Emissions</button>
-    </form>
-              </div>
-            )}
 
             {/* Show improvement tip */}
             {showImprovementTip[activeCategory] && (
