@@ -19,102 +19,96 @@ const AuthenticationPage = () => {
 
     // Input validation to check if email and password fields are filled
     if (!email || !password) {
-        setError("Please fill in all fields.");
-        return;
-    }
-
-    try {
-        const response = await fetch(
-            isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                // Use 'username' instead of 'email' to match backend field names
-                body: JSON.stringify({ username: email, password }),
-            }
-        );
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Save JWT token to localStorage upon successful login
-            if (isLoginMode) {
-                localStorage.setItem('authToken', data.token); // Save JWT token
-            }
-
-            setSuccessMessage(
-                isLoginMode
-                    ? 'Login successful! Redirecting to the tracking page...'
-                    : 'Registration successful! Switching to login...'
-            );
-
-            if (isLoginMode) {
-                // Redirect to tracking page after successful login
-                setTimeout(() => {
-                    navigate('/AccurateTrackingV3'); // Redirect to tracking page
-                }, 2000);
-            } else {
-                // Switch to login mode after registration
-                setTimeout(() => {
-                    setIsLoginMode(true); // Toggle to login mode
-                    setSuccessMessage(''); // Clear success message after switching
-                }, 2000);
-            }
-        } else {
-            setError(data.error || 'An error occurred during authentication.');
-        }
-    } catch (err) {
-        setError('Something went wrong. Please try again.');
-    }
-  };
-
-  // Save JWT token on login
-  const loginUser = async (username, password) => {
-    try {
-        const response = await fetch('http://localhost:5000/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            console.log('Login successful:', data);
-            localStorage.setItem('authToken', data.token); // Save JWT token in localStorage
-        } else {
-            console.error('Login failed:', data.error);
-        }
-    } catch (error) {
-        console.error('Error logging in:', error);
-    }
-  };
-
-  // Save emission data
-  const saveEmissionData = async (emissionType, emissionValue, badge) => {
-    const token = localStorage.getItem('authToken'); // Retrieve the JWT token
-
-    if (!token) {
-      console.error('No authentication token found.');
+      setError('Please fill in all fields.');
       return;
     }
 
-    const response = await fetch('http://localhost:5000/api/storeEmission', {
+    try {
+      const response = await fetch(
+        isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: email, password }), // Match backend field names
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('authToken', data.token); // Save JWT token on successful login
+        setSuccessMessage(
+          isLoginMode
+            ? 'Login successful! Redirecting to the tracking page...'
+            : 'Registration successful! Switching to login...'
+        );
+
+        if (isLoginMode) {
+          // Simulate redirect after successful login
+          setTimeout(() => {
+            navigate('/AccurateTrackingV3'); // Redirect to tracking page
+          }, 2000);
+        } else {
+          // Switch to login mode after registration
+          setTimeout(() => {
+            setIsLoginMode(true); // Toggle to login mode
+            setSuccessMessage(''); // Clear success message after switching
+          }, 2000);
+        }
+      } else {
+        setError(data.error || 'An error occurred during authentication.');
+      }
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+    }
+  };
+
+  const loginUser = async (username, password) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Login successful:', data);
+        localStorage.setItem('authToken', data.token); // Save JWT token in localStorage
+      } else {
+        console.error('Login failed:', data.error);
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+    }
+  };
+
+  const saveEmissionData = async (emissionType, emissionValue, badge) => {
+    const token = localStorage.getItem('authToken'); // Retrieve the JWT token
+
+    try {
+      const response = await fetch('http://localhost:5000/api/storeEmission', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Corrected syntax for Bearer token
         },
         body: JSON.stringify({
-            emissionType,
-            emissionValue,
-            badge
-        })
-    });
+          emissionType,
+          emissionValue,
+          badge,
+        }),
+      });
 
-    const result = await response.json();
-    console.log(result); // Log the result or handle the UI update
+      const result = await response.json();
+      console.log(result); // Log the result or handle the UI update
+    } catch (error) {
+      console.error('Error saving emission data:', error);
+    }
   };
+
+
 
   
 
