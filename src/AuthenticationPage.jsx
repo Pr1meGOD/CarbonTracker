@@ -1,9 +1,8 @@
-// AuthenticationPage.js
+
 import React ,{ useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import bg from "./assets/Images/home_page_bg.jpg";
 import { Leaf } from 'lucide-react';
-// import ContactUs from './ContactUs';
 
 const AuthenticationPage = () => {
   const [email, setEmail] = useState('');
