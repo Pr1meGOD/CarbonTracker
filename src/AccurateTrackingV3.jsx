@@ -50,8 +50,6 @@ const AccurateTrackingV3 = () => {
   };
 
   const handleSubmit = async (e) => {
-
-    
     e.preventDefault();
 
     const token = localStorage.getItem('authToken');
@@ -64,6 +62,7 @@ const AccurateTrackingV3 = () => {
       let response;
       const headers = { Authorization: `Bearer ${token}` };
 
+      // Submit emission data based on the active category (bike, car, home)
       if (activeCategory === 'bike') {
         response = await axios.post(
           'http://localhost:5000/api/calculateBikeEmission',
@@ -84,19 +83,29 @@ const AccurateTrackingV3 = () => {
         );
       }
 
-      
+      // Assuming the backend returns the emission data and badge
+      const { badge, emissionValue } = response.data;
 
-      const { badge } = response.data;
+      // Save the emission data to the backend
+      await axios.post(
+        'http://localhost:5000/api/storeEmission', 
+        { emissionType: activeCategory, emissionValue, badge }, 
+        { headers }
+      );
+
+      // Store the results in state
       setResults((prevResults) => ({
         ...prevResults,
         [activeCategory]: response.data,
       }));
 
+      // Determine if improvement tips should be shown based on the badge
       setShowImprovementTip((prevTips) => ({
         home: activeCategory === 'home' ? ['B', 'C', 'F'].includes(badge) : false,
         car: activeCategory === 'car' ? ['B', 'C', 'F'].includes(badge) : false,
         bike: activeCategory === 'bike' ? ['B', 'C', 'F'].includes(badge) : false,
       }));
+
     } catch (error) {
       console.error('Error calculating emission:', error);
     }
