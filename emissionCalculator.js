@@ -70,7 +70,6 @@ app.post('/api/login', (req, res) => {
 
 
 
-
 app.post('/api/storeEmission', authMiddleware, async (req, res) => {
     const { emissionType, emissionValue, badge } = req.body;
     const userId = req.user.userId; // Extracted from the token
