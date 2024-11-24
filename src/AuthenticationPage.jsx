@@ -12,8 +12,6 @@ const AuthenticationPage = () => {
   const [successMessage, setSuccessMessage] = useState(''); // State for success message
   const navigate = useNavigate(); // Initialize useNavigate
 
- 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -39,6 +37,11 @@ const AuthenticationPage = () => {
         const data = await response.json();
 
         if (response.ok) {
+            // Save JWT token to localStorage upon successful login
+            if (isLoginMode) {
+                localStorage.setItem('authToken', data.token); // Save JWT token
+            }
+
             setSuccessMessage(
                 isLoginMode
                     ? 'Login successful! Redirecting to the tracking page...'
@@ -46,7 +49,7 @@ const AuthenticationPage = () => {
             );
 
             if (isLoginMode) {
-                // Simulate redirect after successful login
+                // Redirect to tracking page after successful login
                 setTimeout(() => {
                     navigate('/AccurateTrackingV3'); // Redirect to tracking page
                 }, 2000);
@@ -63,53 +66,55 @@ const AuthenticationPage = () => {
     } catch (err) {
         setError('Something went wrong. Please try again.');
     }
-    
-};
-  
+  };
 
-// Save JWT token on login
-const loginUser = async (username, password) => {
-  try {
-      const response = await fetch('http://localhost:5000/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
-      });
+  // Save JWT token on login
+  const loginUser = async (username, password) => {
+    try {
+        const response = await fetch('http://localhost:5000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok) {
-          console.log('Login successful:', data);
-          localStorage.setItem('authToken', data.token); // Save JWT token in localStorage
-      } else {
-          console.error('Login failed:', data.error);
-      }
-  } catch (error) {
-      console.error('Error logging in:', error);
-  }
-};
+        if (response.ok) {
+            console.log('Login successful:', data);
+            localStorage.setItem('authToken', data.token); // Save JWT token in localStorage
+        } else {
+            console.error('Login failed:', data.error);
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+    }
+  };
 
+  // Save emission data
+  const saveEmissionData = async (emissionType, emissionValue, badge) => {
+    const token = localStorage.getItem('authToken'); // Retrieve the JWT token
 
+    if (!token) {
+      console.error('No authentication token found.');
+      return;
+    }
 
-const saveEmissionData = async (emissionType, emissionValue, badge) => {
-  const token = localStorage.getItem('token'); // Retrieve the JWT token
+    const response = await fetch('http://localhost:5000/api/storeEmission', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            emissionType,
+            emissionValue,
+            badge
+        })
+    });
 
-  const response = await fetch('http://localhost:5000/api/storeEmission', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-          emissionType,
-          emissionValue,
-          badge
-      })
-  });
-
-  const result = await response.json();
-  console.log(result); // Log the result or handle the UI update
-};
+    const result = await response.json();
+    console.log(result); // Log the result or handle the UI update
+  };
 
   
 
