@@ -45,97 +45,6 @@ const AccurateTrackingV3 = () => {
     }));
   };
 
-
-
-  async function saveEmissions(calculatedValues) {
-    const {
-        carEmission,
-        bikeEmission,
-        homeEmission,
-        carBadge,
-        bikeBadge,
-        homeBadge,
-    } = calculatedValues;
-
-    // Prepare the request body dynamically
-    const data = {};
-    if (carEmission !== undefined) data.carEmission = carEmission;
-    if (bikeEmission !== undefined) data.bikeEmission = bikeEmission;
-    if (homeEmission !== undefined) data.homeEmission = homeEmission;
-    if (carBadge !== undefined) data.carBadge = carBadge;
-    if (bikeBadge !== undefined) data.bikeBadge = bikeBadge;
-    if (homeBadge !== undefined) data.homeBadge = homeBadge;
-
-    // Check if there's any data to send
-    if (Object.keys(data).length === 0) {
-        console.error('No data to save.');
-        return;
-    }
-
-    try {
-        // Send the data to the backend API
-        const response = await fetch('/api/storeEmissions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getAuthToken()}`, // Include auth token if required
-            },
-            body: JSON.stringify(data),
-        });
-
-        // Handle the API response
-        const result = await response.json();
-        if (response.ok) {
-            console.log('Emission data saved successfully:', result.message);
-        } else {
-            console.error('Failed to save emission data:', result.error);
-        }
-    } catch (error) {
-        console.error('Error while saving emissions:', error);
-    }
-}
-
-
-const AccurateTrackingV3 = () => {
-  const [activeCategory, setActiveCategory] = useState('home');
-  const [formData, setFormData] = useState({
-    electricity: '',
-    heating: '',
-    carMileage: '',
-    carFuelType: '',
-    bikeMileage: '',
-    bikeCC: '',
-    meatConsumption: '',
-    flights: '',
-  });
-  const [results, setResults] = useState({
-    home: null,
-    car: null,
-    bike: null,
-  });
-  const [showImprovementTip, setShowImprovementTip] = useState({
-    home: false,
-    car: false,
-    bike: false,
-  });
-  const navigate = useNavigate();
-
-  // Ensure user is logged in using JWT
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      navigate('/AuthenticationPage'); // Redirect to login if no token found
-    }
-  }, [navigate]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
   // Function to save emission data to the backend
   async function saveEmissions(calculatedValues) {
     const {
@@ -168,7 +77,7 @@ const AccurateTrackingV3 = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${getAuthToken()}`, // Include auth token if required
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Include auth token if required
         },
         body: JSON.stringify(data),
       });
@@ -194,6 +103,17 @@ const AccurateTrackingV3 = () => {
     navigate('/CarbonReductionTips');
   };
 
+  setResults((prevResults) => ({
+    ...prevResults,
+    [activeCategory]: {
+      homeEmission: response.data.homeEmission,
+      carEmission: response.data.carEmission,
+      bikeEmission: response.data.bikeEmission,
+      badge: response.data.badge,
+    },
+  }));
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -501,6 +421,6 @@ const AccurateTrackingV3 = () => {
       </div>
     </div>
   );};
-};
+
 
   export default AccurateTrackingV3; 
