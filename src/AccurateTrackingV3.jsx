@@ -82,10 +82,9 @@ const AccurateTrackingV3 = () => {
         );
       }
 
-      // Get the badge from response
       const { badge, emissionValue } = response.data;
 
-      // Updating the results state for display on UI
+      // Update the results state to display on the UI
       setResults((prevResults) => ({
         ...prevResults,
         [activeCategory]: {
@@ -101,7 +100,7 @@ const AccurateTrackingV3 = () => {
         bike: activeCategory === 'bike' ? ['B', 'C', 'F'].includes(badge) : false,
       }));
 
-      // Now send the emission data to be stored
+      // Send the emission data to be stored
       const storeResponse = await fetch('http://localhost:5000/api/storeEmission', {
         method: 'POST',
         headers: {
@@ -126,27 +125,7 @@ const AccurateTrackingV3 = () => {
       console.error('Error calculating emission:', error);
     }
   };
-
-  return (
-    <div>
-      {/* Add UI elements to show results */}
-      <h2>Emission Results</h2>
-      {results[activeCategory] && (
-        <div>
-          <p>Emission Value: {results[activeCategory].emissionValue}</p>
-          <p>Badge: {results[activeCategory].badge}</p>
-        </div>
-      )}
-
-      {/* Form for submitting */}
-      <form onSubmit={handleSubmit}>
-        {/* Your form fields here */}
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-  );
-};
-
+  
 
   
 
@@ -356,7 +335,7 @@ const AccurateTrackingV3 = () => {
         </main>
       </div>
     </div>
-  );
+  );};
   
 
-  export default AccurateTrackingV3;
+  export default AccurateTrackingV3; 

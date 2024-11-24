@@ -75,11 +75,12 @@ app.post('/api/storeEmission', authMiddleware, async (req, res) => {
     const { emissionType, emissionValue, badge } = req.body;
     const userId = req.user.userId; // Extracted from the token
 
+    // Validate input
     if (!emissionType || !emissionValue || !badge) {
         return res.status(400).json({ error: 'All fields (emissionType, emissionValue, badge) are required' });
     }
 
-    // Determine the column to update based on the emission type
+    // Determine the column to update based on emissionType
     let column;
     if (emissionType === 'car') column = 'car_emission';
     else if (emissionType === 'bike') column = 'bike_emission';
@@ -87,8 +88,8 @@ app.post('/api/storeEmission', authMiddleware, async (req, res) => {
     else return res.status(400).json({ error: 'Invalid emission type' });
 
     const query = `
-        UPDATE test_Users 
-        SET ${column} = ?, badge = ?, last_calculated_date = NOW() 
+        UPDATE test_Users
+        SET ${column} = ?, badge = ?, last_calculated_date = NOW()
         WHERE id = ?
     `;
 
@@ -111,6 +112,7 @@ app.post('/api/storeEmission', authMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 
 
