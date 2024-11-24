@@ -78,6 +78,8 @@ const AccurateTrackingV3 = () => {
     }
   }
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -134,15 +136,8 @@ const AccurateTrackingV3 = () => {
           car_Badge: badge,  // Using the fetched badge
         };
 
-        setResults((prevResults) => ({
-          ...prevResults,
-          [activeCategory]: {
-            homeEmission: response.data.homeEmission,
-            carEmission: response.data.carEmission,
-            bikeEmission: response.data.bikeEmission,
-            badge: response.data.badge,
-          },
-        }));
+    
+        
 
         await saveEmissions(dataToSave);
       } else if (activeCategory === "home") {
@@ -180,7 +175,15 @@ const AccurateTrackingV3 = () => {
       console.error("Error calculating emission:", error);
     }
   };
-
+  setResults((prevResults) => ({
+    ...prevResults,
+    [activeCategory]: {
+      homeEmission: response.data.homeEmission,
+      carEmission: response.data.carEmission,
+      bikeEmission: response.data.bikeEmission,
+      badge: response.data.badge,
+    },
+  }));
   const categories = [
     { id: "home", name: "Home", icon: <Home className="h-6 w-6" /> },
     { id: "car", name: "Car", icon: <Car className="h-6 w-6" /> },
@@ -367,6 +370,7 @@ const AccurateTrackingV3 = () => {
     </p>
     <p>Badge: {results[activeCategory].badge}</p>
   </div>
+  
 )}
 
 
