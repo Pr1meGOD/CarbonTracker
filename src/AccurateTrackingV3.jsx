@@ -46,52 +46,55 @@ const AccurateTrackingV3 = () => {
   };
 
 
-// Function to save emission data to the backend
-async function saveEmissions(calculatedValues) {
-  
-  const { carEmission, bikeEmission, homeEmission, badge } = calculatedValues;
 
- y
-  const data = {};
-  if (carEmission !== undefined) data.carEmission = carEmission;
-  if (bikeEmission !== undefined) data.bikeEmission = bikeEmission;
-  if (homeEmission !== undefined) data.homeEmission = homeEmission;
-  if (badge !== undefined) data.badge = badge;
 
   
-  if (Object.keys(data).length === 0) {
-      console.error('No data to save.');
-      return;
-  }
+  async function saveEmissions(calculatedValues) {
+    const {
+        carEmission,
+        bikeEmission,
+        homeEmission,
+        carBadge,
+        bikeBadge,
+        homeBadge,
+    } = calculatedValues;
 
-  try {
-     
-      const response = await fetch('/api/storeEmissions', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${getAuthToken()}`, 
-          },
-          body: JSON.stringify(data),
-      });
+    // Prepare the request body dynamically
+    const data = {};
+    if (carEmission !== undefined) data.carEmission = carEmission;
+    if (bikeEmission !== undefined) data.bikeEmission = bikeEmission;
+    if (homeEmission !== undefined) data.homeEmission = homeEmission;
+    if (carBadge !== undefined) data.carBadge = carBadge;
+    if (bikeBadge !== undefined) data.bikeBadge = bikeBadge;
+    if (homeBadge !== undefined) data.homeBadge = homeBadge;
 
-      // Handle the API response
-      const result = await response.json();
-      if (response.ok) {
-          console.log('Emission data saved successfully:', result.message);
-      } else {
-          console.error('Failed to save emission data:', result.error);
-      }
-  } catch (error) {
-      console.error('Error while saving emissions:', error);
-  }
-}
+    // Check if there's any data to send
+    if (Object.keys(data).length === 0) {
+        console.error('No data to save.');
+        return;
+    }
 
+    try {
+        // Send the data to the backend API
+        const response = await fetch('/api/storeEmissions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${getAuthToken()}`, // Include auth token if required
+            },
+            body: JSON.stringify(data),
+        });
 
-
-function getAuthToken() {
-  // Placeholder: Replace with your actual implementation
-  return localStorage.getItem('authToken');
+        // Handle the API response
+        const result = await response.json();
+        if (response.ok) {
+            console.log('Emission data saved successfully:', result.message);
+        } else {
+            console.error('Failed to save emission data:', result.error);
+        }
+    } catch (error) {
+        console.error('Error while saving emissions:', error);
+    }
 }
 
 
