@@ -124,9 +124,6 @@ function getAuthToken() {
   return localStorage.getItem('authToken');
 }
 
-
-
-
   const handleRedirectToTips = () => {
     navigate('/CarbonReductionTips');
   };
