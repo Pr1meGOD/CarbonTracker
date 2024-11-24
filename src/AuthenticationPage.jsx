@@ -12,56 +12,87 @@ const AuthenticationPage = () => {
   const [successMessage, setSuccessMessage] = useState(''); // State for success message
   const navigate = useNavigate(); // Initialize useNavigate
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccessMessage('');
-
-    // Input validation to check if email and password fields are filled
-    if (!email || !password) {
-      setError('Please fill in all fields.');
+  
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.error("No authentication token found.");
       return;
     }
-
+  
     try {
-      const response = await fetch(
-        isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: email, password }), // Match backend field names
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('authToken', data.token); // Save JWT token on successful login
-        setSuccessMessage(
-          isLoginMode
-            ? 'Login successful! Redirecting to the tracking page...'
-            : 'Registration successful! Switching to login...'
+      let response;
+      const headers = { Authorization: `Bearer ${token}` };
+  
+      // Calculate emissions based on the active category
+      if (activeCategory === 'bike') {
+        response = await axios.post(
+          'http://localhost:5000/api/calculateBikeEmission',
+          { cc: formData.bikeCC, monthlyMileage: formData.bikeMileage },
+          { headers }
         );
-
-        if (isLoginMode) {
-          // Simulate redirect after successful login
-          setTimeout(() => {
-            navigate('/AccurateTrackingV3'); // Redirect to tracking page
-          }, 2000);
-        } else {
-          // Switch to login mode after registration
-          setTimeout(() => {
-            setIsLoginMode(true); // Toggle to login mode
-            setSuccessMessage(''); // Clear success message after switching
-          }, 2000);
-        }
-      } else {
-        setError(data.error || 'An error occurred during authentication.');
+      } else if (activeCategory === 'car') {
+        response = await axios.post(
+          'http://localhost:5000/api/calculateCarEmission',
+          { carMileage: formData.carMileage, carFuelType: formData.carFuelType },
+          { headers }
+        );
+      } else if (activeCategory === 'home') {
+        response = await axios.post(
+          'http://localhost:5000/api/calculateHomeEmission',
+          { electricityUsage: formData.electricity, heatingUsage: formData.heating },
+          { headers }
+        );
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
+  
+      // Extract badge and emission value from the response
+      const { badge, emissionValue } = response.data;
+  
+      // Update the results state to display on the UI
+      setResults((prevResults) => ({
+        ...prevResults,
+        [activeCategory]: {
+          emissionValue, // calculated emission value
+          badge,         // corresponding badge
+        },
+      }));
+  
+      // Show improvement tips based on the badge
+      setShowImprovementTip((prevTips) => ({
+        home: activeCategory === 'home' ? ['B', 'C', 'F'].includes(badge) : false,
+        car: activeCategory === 'car' ? ['B', 'C', 'F'].includes(badge) : false,
+        bike: activeCategory === 'bike' ? ['B', 'C', 'F'].includes(badge) : false,
+      }));
+  
+      // Send the emission data to the backend for storage
+      const storeResponse = await fetch('http://localhost:5000/api/storeEmission', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          emissionType: activeCategory, // Pass the active category (car, bike, home)
+          emissionValue: emissionValue, // Pass the calculated emission value
+          badge: badge,                 // Pass the badge
+        }),
+      });
+  
+      const storeData = await storeResponse.json();
+      if (storeData.error) {
+        console.error('Error storing emission data:', storeData.error);
+      } else {
+        console.log('Emission data stored successfully');
+      }
+  
+    } catch (error) {
+      console.error('Error calculating emission:', error);
     }
   };
+  
+
 
   const loginUser = async (username, password) => {
     try {
