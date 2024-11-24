@@ -37,7 +37,9 @@ const AuthenticationPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('authToken', data.token); // Save JWT token on successful login
+        // Save JWT token to localStorage
+        localStorage.setItem('authToken', data.token);
+
         setSuccessMessage(
           isLoginMode
             ? 'Login successful! Redirecting to the tracking page...'
@@ -64,36 +66,25 @@ const AuthenticationPage = () => {
     }
   };
 
-  const loginUser = async (username, password) => {
-    try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
+  // Function to fetch the JWT token from localStorage
+  const getToken = () => localStorage.getItem('authToken');
 
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log('Login successful:', data);
-        localStorage.setItem('authToken', data.token); // Save JWT token in localStorage
-      } else {
-        console.error('Login failed:', data.error);
-      }
-    } catch (error) {
-      console.error('Error logging in:', error);
-    }
-  };
-
+  // Function to save emission data to the backend
   const saveEmissionData = async (emissionType, emissionValue, badge) => {
-    const token = localStorage.getItem('authToken'); // Retrieve the JWT token
+    const token = getToken(); // Retrieve the JWT token
+
+    if (!token) {
+      console.error('No token found. Please log in again.');
+      setError('Session expired. Please log in again.');
+      return;
+    }
 
     try {
-      const response = await fetch('http://localhost:5000/api/storeEmission', {
+      const response = await fetch('http://localhost:5000/api/storeEmissions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Corrected syntax for Bearer token
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           emissionType,
@@ -103,9 +94,16 @@ const AuthenticationPage = () => {
       });
 
       const result = await response.json();
-      console.log(result); // Log the result or handle the UI update
+
+      if (response.ok) {
+        console.log('Emission data saved:', result);
+      } else {
+        console.error('Error saving emission data:', result.error);
+        setError(result.error || 'Failed to save emission data.');
+      }
     } catch (error) {
       console.error('Error saving emission data:', error);
+      setError('Failed to save emission data.');
     }
   };
 
