@@ -57,7 +57,7 @@ app.post('/api/login', (req, res) => {
         }
 
         // Generate JWT Token
-        const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '3h' });
 
         res.status(200).json({
             message: 'Login successful',
@@ -67,6 +67,14 @@ app.post('/api/login', (req, res) => {
 });
 
 
+jwt.verify(token, 'your-secret-key', (err, decoded) => {
+    if (err) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+    }
+   
+    req.user = decoded;  
+    next();  
+});
 
 
 // Route: Store Emissions (Car, Bike, and Household)
@@ -194,6 +202,15 @@ const db = mysql.createPool({
     user: 'root',         
     password: 'atharva@2212', 
     database: 'sem3_project', 
+});
+
+
+db.getConnection((err) => {
+    if (err) {
+        console.error('Database connection failed:', err);
+        throw err;
+    }
+    console.log('Database connected successfully.');
 });
 
 
