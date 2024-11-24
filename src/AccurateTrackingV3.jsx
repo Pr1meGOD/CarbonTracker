@@ -81,8 +81,6 @@ const AccurateTrackingV3 = () => {
     }
   }
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -112,8 +110,8 @@ const AccurateTrackingV3 = () => {
         setResults((prevResults) => ({
           ...prevResults,
           bike: {
-            bikeEmission: response.data.bikeEmission,
-            badge: response.data.badge,
+            bikeEmission: emissionValue, // Storing the fetched emission value
+            badge: badge, // Storing the fetched badge
           },
         }));
 
@@ -123,7 +121,6 @@ const AccurateTrackingV3 = () => {
         };
 
         await saveEmissions(dataToSave);
-
 
       } else if (activeCategory === "car") {
         response = await axios.post(
@@ -137,8 +134,8 @@ const AccurateTrackingV3 = () => {
         setResults((prevResults) => ({
           ...prevResults,
           car: {
-            carEmission: response.data.carEmission,
-            badge: response.data.badge,
+            carEmission: emissionValue, // Storing the fetched emission value
+            badge: badge, // Storing the fetched badge
           },
         }));
 
@@ -146,7 +143,6 @@ const AccurateTrackingV3 = () => {
           carEmissions: emissionValue,  // Using the fetched emission value
           car_Badge: badge,  // Using the fetched badge
         };
-        
 
         await saveEmissions(dataToSave);
       } else if (activeCategory === "home") {
@@ -163,11 +159,10 @@ const AccurateTrackingV3 = () => {
         setResults((prevResults) => ({
           ...prevResults,
           home: {
-            homeEmission: response.data.homeEmission,
-            badge: response.data.badge,
+            homeEmission: emissionValue, // Storing the fetched emission value
+            badge: badge, // Storing the fetched badge
           },
         }));
-      
 
         dataToSave = {
           household_emissions: emissionValue,  // Using the fetched emission value
@@ -182,7 +177,7 @@ const AccurateTrackingV3 = () => {
         ...prevTips,
         [activeCategory]: ["B", "C", "F"].includes(badge),
       }));
-      
+
     } catch (error) {
       console.error("Error calculating emission:", error);
     }
