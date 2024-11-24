@@ -356,7 +356,7 @@ const AccurateTrackingV3 = () => {
         </main>
       </div>
     </div>
-  );};
+  );
   
 
   export default AccurateTrackingV3;
