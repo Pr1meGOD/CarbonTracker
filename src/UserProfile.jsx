@@ -59,7 +59,7 @@ const UserProfile = ({ user }) => {
           <button
             className="mt-4 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-700 transition-colors"
             onClick={() => {
-                <Link to="/user-profile"></Link> 
+                <Link to="/accurateTrackingV3"></Link> 
             }}
           >
             Track More Emissions
