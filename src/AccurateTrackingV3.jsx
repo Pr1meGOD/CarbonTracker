@@ -174,6 +174,15 @@ const AccurateTrackingV3 = () => {
     }
   };
   
+  setResults((prevResults) => ({
+    ...prevResults,
+    [activeCategory]: {
+      homeEmission: response.data.homeEmission,
+      carEmission: response.data.carEmission,
+      bikeEmission: response.data.bikeEmission,
+      badge: response.data.badge,
+    },
+  }));
 
   
 
