@@ -52,7 +52,6 @@ const AccurateTrackingV3 = () => {
     navigate('/CarbonReductionTips');
   };
 
-  // Save emissions data to the backend
   async function saveEmissions(dataToSave) {
     try {
       const token = localStorage.getItem("authToken");
@@ -105,19 +104,19 @@ const AccurateTrackingV3 = () => {
           { headers }
         );
         badge = response.data.badge;
-        emissionValue = response.data.emissionValue;
+        emissionValue = response.data.bikeEmission; // Assuming response.data.bikeEmission is the correct field
 
         setResults((prevResults) => ({
           ...prevResults,
           bike: {
-            bikeEmission: emissionValue, // Storing the fetched emission value
-            badge: badge, // Storing the fetched badge
+            bikeEmission: emissionValue,
+            badge: badge,
           },
         }));
 
         dataToSave = {
-          bikeEmissions: emissionValue,  // Using the fetched emission value
-          bike_Badge: badge,  // Using the fetched badge
+          bikeEmissions: emissionValue, // Using the fetched emission value
+          bike_Badge: badge, // Using the fetched badge
         };
 
         await saveEmissions(dataToSave);
@@ -129,22 +128,23 @@ const AccurateTrackingV3 = () => {
           { headers }
         );
         badge = response.data.badge;
-        emissionValue = response.data.emissionValue;
+        emissionValue = response.data.carEmission; // Assuming response.data.carEmission is the correct field
 
         setResults((prevResults) => ({
           ...prevResults,
           car: {
-            carEmission: emissionValue, // Storing the fetched emission value
-            badge: badge, // Storing the fetched badge
+            carEmission: emissionValue,
+            badge: badge,
           },
         }));
 
         dataToSave = {
-          carEmissions: emissionValue,  // Using the fetched emission value
-          car_Badge: badge,  // Using the fetched badge
+          carEmissions: emissionValue, // Using the fetched emission value
+          car_Badge: badge, // Using the fetched badge
         };
 
         await saveEmissions(dataToSave);
+
       } else if (activeCategory === "home") {
         response = await axios.post(
           "http://localhost:5000/api/calculateHomeEmission",
@@ -155,18 +155,19 @@ const AccurateTrackingV3 = () => {
           { headers }
         );
         badge = response.data.badge;
-        emissionValue = response.data.emissionValue;
+        emissionValue = response.data.homeEmission; // Assuming response.data.homeEmission is the correct field
+
         setResults((prevResults) => ({
           ...prevResults,
           home: {
-            homeEmission: emissionValue, // Storing the fetched emission value
-            badge: badge, // Storing the fetched badge
+            homeEmission: emissionValue,
+            badge: badge,
           },
         }));
 
         dataToSave = {
-          household_emissions: emissionValue,  // Using the fetched emission value
-          home_Badge: badge,  // Using the fetched badge
+          household_emissions: emissionValue, // Using the fetched emission value
+          home_Badge: badge, // Using the fetched badge
         };
 
         await saveEmissions(dataToSave);
@@ -177,7 +178,7 @@ const AccurateTrackingV3 = () => {
         ...prevTips,
         [activeCategory]: ["B", "C", "F"].includes(badge),
       }));
-
+      
     } catch (error) {
       console.error("Error calculating emission:", error);
     }
