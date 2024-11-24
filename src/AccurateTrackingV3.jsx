@@ -84,14 +84,17 @@ const AccurateTrackingV3 = () => {
 
       const { badge, emissionValue } = response.data;
 
-      // Update the results state to display on the UI
       setResults((prevResults) => ({
         ...prevResults,
         [activeCategory]: {
-          emissionValue,
-          badge
+          homeEmission: response.data.homeEmission,
+          carEmission: response.data.carEmission,
+          bikeEmission: response.data.bikeEmission,
+          badge: response.data.badge,
         },
       }));
+      
+
 
       // Show improvement tips if badge is 'B', 'C', or 'F'
       setShowImprovementTip((prevTips) => ({
