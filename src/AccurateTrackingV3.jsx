@@ -62,6 +62,7 @@ const AccurateTrackingV3 = () => {
       let response;
       const headers = { Authorization: `Bearer ${token}` };
 
+      // API call for the active category (car, bike, home)
       if (activeCategory === 'bike') {
         response = await axios.post(
           'http://localhost:5000/api/calculateBikeEmission',
@@ -82,17 +83,45 @@ const AccurateTrackingV3 = () => {
         );
       }
 
-      const { badge, emissionValue } = response.data;
+      const { badge, homeEmission, carEmission, bikeEmission } = response.data;
 
+      // Update the results state
       setResults((prevResults) => ({
         ...prevResults,
-        [activeCategory]: {
-          homeEmission: response.data.homeEmission,
-          carEmission: response.data.carEmission,
-          bikeEmission: response.data.bikeEmission,
-          badge: response.data.badge,
-        },
+        home: homeEmission || prevResults.home,
+        car: carEmission || prevResults.car,
+        bike: bikeEmission || prevResults.bike,
+        badge: badge || prevResults.badge,
       }));
+
+      // Ensure all required values are set
+      const allCarEmission = carEmission || results.car?.carEmission || 0;
+      const allBikeEmission = bikeEmission || results.bike?.bikeEmission || 0;
+      const allHomeEmission = homeEmission || results.home?.homeEmission || 0;
+      const overallBadge = badge || results.home?.badge || 'N/A';
+
+      // Store all emissions in the database
+      const storeResponse = await fetch('http://localhost:5000/api/storeEmissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          carEmission: allCarEmission,
+          bikeEmission: allBikeEmission,
+          homeEmission: allHomeEmission,
+          badge: overallBadge,
+        }),
+      });
+
+      const storeData = await storeResponse.json();
+
+      if (storeResponse.ok) {
+        console.log('All emission data stored successfully:', storeData);
+      } else {
+        console.error('Error storing all emission data:', storeData.error);
+      }
 
       // Show improvement tips if badge is 'B', 'C', or 'F'
       setShowImprovementTip((prevTips) => ({
@@ -100,34 +129,9 @@ const AccurateTrackingV3 = () => {
         car: activeCategory === 'car' ? ['B', 'C', 'F'].includes(badge) : false,
         bike: activeCategory === 'bike' ? ['B', 'C', 'F'].includes(badge) : false,
       }));
-
-      // ** New Section: Storing All Emissions Together **
-      const allEmissionsResponse = await fetch('http://localhost:5000/api/storeEmissions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          carEmission: results.car ? results.car.carEmission : null,
-          bikeEmission: results.bike ? results.bike.bikeEmission : null,
-          homeEmission: results.home ? results.home.homeEmission : null,
-          badge: results.home ? results.home.badge : badge, // Default to the last calculated badge
-        }),
-      });
-
-      const allEmissionsData = await allEmissionsResponse.json();
-      if (allEmissionsResponse.ok) {
-        console.log('All emission data stored successfully:', allEmissionsData);
-      } else {
-        console.error('Error storing all emission data:', allEmissionsData.error);
-      }
-      // ** End of New Section **
-
     } catch (error) {
-      console.error('Error calculating emission:', error);
-    }
-  };
+      console.error('Error calculating emission or storing data:', error);
+    }};
   
 
   
