@@ -47,54 +47,81 @@ const AccurateTrackingV3 = () => {
 
 
 
+ 
+  // Function to save emission data to the backend
+async function saveEmissions(calculatedValues) {
+  const {
+      carEmissions,
+      bikeEmissions,
+      householdEmissions,
+      carBadge,
+      bikeBadge,
+      homeBadge,
+  } = calculatedValues;
 
-  
-  async function saveEmissions(calculatedValues) {
-    const {
-        carEmission,
-        bikeEmission,
-        homeEmission,
-        carBadge,
-        bikeBadge,
-        homeBadge,
-    } = calculatedValues;
+  // Prepare the request body dynamically
+  const data = {};
+  if (carEmissions !== undefined) data.carEmissions = carEmissions;
+  if (bikeEmissions !== undefined) data.bikeEmissions = bikeEmissions;
+  if (householdEmissions !== undefined) data.householdEmissions = householdEmissions;
+  if (carBadge !== undefined) data.carBadge = carBadge;
+  if (bikeBadge !== undefined) data.bikeBadge = bikeBadge;
+  if (homeBadge !== undefined) data.homeBadge = homeBadge;
 
-    // Prepare the request body dynamically
-    const data = {};
-    if (carEmission !== undefined) data.carEmission = carEmission;
-    if (bikeEmission !== undefined) data.bikeEmission = bikeEmission;
-    if (homeEmission !== undefined) data.homeEmission = homeEmission;
-    if (carBadge !== undefined) data.carBadge = carBadge;
-    if (bikeBadge !== undefined) data.bikeBadge = bikeBadge;
-    if (homeBadge !== undefined) data.homeBadge = homeBadge;
+  // Check if there's any data to send
+  if (Object.keys(data).length === 0) {
+      console.error('No data to save.');
+      return;
+  }
 
-    // Check if there's any data to send
-    if (Object.keys(data).length === 0) {
-        console.error('No data to save.');
-        return;
-    }
+  try {
+      // Send the data to the backend API
+      const response = await fetch('/api/storeEmissions', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${getAuthToken()}`, // Include auth token if required
+          },
+          body: JSON.stringify(data),
+      });
 
-    try {
-        // Send the data to the backend API
-        const response = await fetch('/api/storeEmissions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${getAuthToken()}`, // Include auth token if required
-            },
-            body: JSON.stringify(data),
-        });
+      // Handle the API response
+      const result = await response.json();
+      if (response.ok) {
+          console.log('Emission data saved successfully:', result.message);
+      } else {
+          console.error('Failed to save emission data:', result.error);
+      }
+  } catch (error) {
+      console.error('Error while saving emissions:', error);
+  }
+}
 
-        // Handle the API response
-        const result = await response.json();
-        if (response.ok) {
-            console.log('Emission data saved successfully:', result.message);
-        } else {
-            console.error('Failed to save emission data:', result.error);
-        }
-    } catch (error) {
-        console.error('Error while saving emissions:', error);
-    }
+// Example usage: Call this function after calculating an emission
+function calculateBikeEmission() {
+  const bikeEmissions = 0.033558559999999994; // Replace with actual calculation logic
+  const bikeBadge = 'S'; // Replace with actual badge logic
+
+  saveEmissions({ bikeEmissions, bikeBadge });
+}
+
+function calculateCarEmission() {
+  const carEmissions = 0.042; // Replace with actual calculation logic
+  const carBadge = 'A'; // Replace with actual badge logic
+
+  saveEmissions({ carEmissions, carBadge });
+}
+
+function calculateHouseholdEmission() {
+  const householdEmissions = 0.015; // Replace with actual calculation logic
+  const homeBadge = 'B'; // Replace with actual badge logic
+
+  saveEmissions({ householdEmissions, homeBadge });
+}
+
+// Replace getAuthToken with your logic to retrieve the user's auth token
+function getAuthToken() {
+  return localStorage.getItem('authToken');
 }
 
 

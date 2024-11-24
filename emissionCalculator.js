@@ -70,11 +70,12 @@ app.post('/api/login', (req, res) => {
 
 
 
+// Route: Store Emissions (Car, Bike, and Household)
 app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     const {
-        carEmission,
-        bikeEmission,
-        homeEmission,
+        carEmissions,
+        bikeEmissions,
+        householdEmissions,
         carBadge,
         bikeBadge,
         homeBadge,
@@ -87,19 +88,19 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     const updates = [];
     const values = [];
 
-    if (carEmission !== undefined) {
-        updates.push('car_emission = ?');
-        values.push(carEmission);
+    if (carEmissions !== undefined) {
+        updates.push('car_emissions = ?');
+        values.push(carEmissions);
     }
 
-    if (bikeEmission !== undefined) {
-        updates.push('bike_emission = ?');
-        values.push(bikeEmission);
+    if (bikeEmissions !== undefined) {
+        updates.push('bike_emissions = ?');
+        values.push(bikeEmissions);
     }
 
-    if (homeEmission !== undefined) {
-        updates.push('household_emission = ?');
-        values.push(homeEmission);
+    if (householdEmissions !== undefined) {
+        updates.push('household_emissions = ?');
+        values.push(householdEmissions);
     }
 
     if (carBadge !== undefined) {
