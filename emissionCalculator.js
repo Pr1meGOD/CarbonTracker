@@ -7,11 +7,11 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const PORT = process.env.PORT || 5000;
 const router = express.Router();
+const secretKey = '1234';
 
 app.use(cors());
 app.use(express.json());
 
-const secretKey = 'your_secret_key';
 
 
 const authMiddleware = (req, res, next) => {
