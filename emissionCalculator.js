@@ -70,13 +70,8 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-app.use((req, res, next) => {
-    const token = req.header('Authorization')?.split(' ')[1]; // Get token from Authorization header
-    if (!token) {
-      return res.status(401).json({ error: 'Token is required' });
-    }
 
-jwt.verify(token, '1234s', (err, decoded) => {
+jwt.verify(token, '1234', (err, decoded) => {
     if (err) {
         return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
     }
@@ -84,7 +79,7 @@ jwt.verify(token, '1234s', (err, decoded) => {
     req.user = decoded;  
     next();  
 });
-});
+
 
 
 // Route: Store Emissions (Car, Bike, and Household)
