@@ -73,6 +73,7 @@ const getToken = () => localStorage.getItem('authToken');
   // Function to fetch the JWT token from localStorage
   const getToken = () => localStorage.getItem('authToken');
 
+  
  // Function to save emission data to the backend
 const saveEmissionData = async (emissionType, emissionValue, badge) => {
   const token = getToken(); // Retrieve the JWT token
