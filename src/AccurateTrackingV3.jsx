@@ -135,16 +135,6 @@ const AccurateTrackingV3 = () => {
           carEmissions: emissionValue,  // Using the fetched emission value
           car_Badge: badge,  // Using the fetched badge
         };
-
-        setResults((prevResults) => ({
-          ...prevResults,
-          [activeCategory]: {
-            homeEmission: response.data.homeEmission,
-            carEmission: response.data.carEmission,
-            bikeEmission: response.data.bikeEmission,
-            badge: response.data.badge,
-          },
-        }));
         
 
         await saveEmissions(dataToSave);
@@ -359,19 +349,19 @@ const AccurateTrackingV3 = () => {
           {results[activeCategory] && (
   <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
     <p>
-      Emission Result: 
-      {activeCategory === 'home' && results[activeCategory].homeEmission
-        ? `${results[activeCategory].homeEmission} metric tons CO₂`
-        : activeCategory === 'car' && results[activeCategory].carEmission
-        ? `${results[activeCategory].carEmission} metric tons CO₂`
-        : activeCategory === 'bike' && results[activeCategory].bikeEmission
-        ? `${results[activeCategory].bikeEmission} metric tons CO₂`
-        : 'No data available'}
+      Emission Result:{" "}
+      {activeCategory === "home" && results.home?.homeEmission
+        ? `${results.home.homeEmission} metric tons CO₂`
+        : activeCategory === "car" && results.car?.carEmission
+        ? `${results.car.carEmission} metric tons CO₂`
+        : activeCategory === "bike" && results.bike?.bikeEmission
+        ? `${results.bike.bikeEmission} metric tons CO₂`
+        : "No data available"}
     </p>
-    <p>Badge: {results[activeCategory].badge}</p>
+    <p>Badge: {results[activeCategory]?.badge || "No badge available"}</p>
   </div>
-  
 )}
+
 
 
 
