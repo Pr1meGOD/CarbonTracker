@@ -67,56 +67,49 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// Route: Store Emission Data (Authenticated)
 app.post('/api/storeEmission', authMiddleware, async (req, res) => {
     const { emissionType, emissionValue, badge } = req.body;
     const userId = req.user.userId; // Extracted from the token
-
+  
+    console.log('Received emission data:', emissionType, emissionValue, badge);
+    console.log('User ID from token:', userId);
+  
     if (!emissionType || !emissionValue || !badge) {
-        return res.status(400).json({ error: 'All fields (emissionType, emissionValue, badge) are required' });
+      return res.status(400).json({ error: 'All fields (emissionType, emissionValue, badge) are required' });
     }
-
-    // Determine the column to update based on the emission type
-    let emissionColumn, badgeColumn;
-    if (emissionType === 'car') {
-        emissionColumn = 'car_emission';
-        badgeColumn = 'car_badge';
-    } else if (emissionType === 'bike') {
-        emissionColumn = 'bike_emission';
-        badgeColumn = 'bike_badge';
-    } else if (emissionType === 'household') {
-        emissionColumn = 'home_emission';
-        badgeColumn = 'home_badge';
-    } else {
-        return res.status(400).json({ error: 'Invalid emission type' });
-    }
-
+  
+    let column;
+    if (emissionType === 'car') column = 'car_emission';
+    else if (emissionType === 'bike') column = 'bike_emission';
+    else if (emissionType === 'household') column = 'home_emission';
+    else return res.status(400).json({ error: 'Invalid emission type' });
+  
     const query = `
         UPDATE test_Users 
-        SET ${emissionColumn} = ?, ${badgeColumn} = ?, last_calculated_date = NOW() 
+        SET ${column} = ?, badge = ?, last_calculated_date = NOW() 
         WHERE id = ?
     `;
-
+  
     try {
-        // Execute the query to update the database
-        db.query(query, [emissionValue, badge, userId], (err, result) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            res.status(200).json({ message: 'Emission data and badge saved successfully' });
-        });
+      db.query(query, [emissionValue, badge, userId], (err, result) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Database error' });
+        }
+  
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+  
+        console.log('Emission data saved successfully:', result);
+        res.status(200).json({ message: 'Emission data saved successfully' });
+      });
     } catch (err) {
-        console.error('Server error:', err);
-        res.status(500).json({ error: 'Server error' });
+      console.error('Server error:', err);
+      res.status(500).json({ error: 'Server error' });
     }
-});
-
+  });
+  
 
 // User Registration Route
 app.post('/api/register', async (req, res) => {
@@ -164,10 +157,10 @@ app.post('/api/register', async (req, res) => {
 
 // Configure MySQL Connection
 const db = mysql.createPool({
-    host: 'localhost',    // Update to your database host
-    user: 'root',         // Update to your database user
-    password: 'atharva@2212', // Update to your database password
-    database: 'sem3_project', // Update to your database name
+    host: 'localhost',    
+    user: 'root',         
+    password: 'atharva@2212', 
+    database: 'sem3_project', 
 });
 
 
@@ -175,7 +168,7 @@ const db = mysql.createPool({
 
 
 
-// Function to calculate emissions for bike, car, and home (unchanged from your code)
+// Function to calculate emissions for bike, car, and home
 function calculateBikeEmission(cc, monthlyMileage) {
     let emissionFactor;
     if (cc <= 125) emissionFactor = 83.19;
