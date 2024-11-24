@@ -73,43 +73,44 @@ const getToken = () => localStorage.getItem('authToken');
   // Function to fetch the JWT token from localStorage
   const getToken = () => localStorage.getItem('authToken');
 
-  // Function to save emission data to the backend
-  const saveEmissionData = async (emissionType, emissionValue, badge) => {
-    const token = getToken(); // Retrieve the JWT token
+ // Function to save emission data to the backend
+const saveEmissionData = async (emissionType, emissionValue, badge) => {
+  const token = getToken(); // Retrieve the JWT token
 
-    if (!token) {
-      console.error('No token found. Please log in again.');
-      setError('Session expired. Please log in again.');
-      return;
+  if (!token) {
+    console.error('No token found. Please log in again.');
+    setError('Session expired. Please log in again.');
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:5000/api/storeEmissions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Send token as Authorization header
+      },
+      body: JSON.stringify({
+        emissionType,
+        emissionValue,
+        badge,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      console.log('Emission data saved:', result);
+    } else {
+      console.error('Error saving emission data:', result.error);
+      setError(result.error || 'Failed to save emission data.');
     }
+  } catch (error) {
+    console.error('Error saving emission data:', error);
+    setError('Failed to save emission data.');
+  }
+};
 
-    try {
-      const response = await fetch('http://localhost:5000/api/storeEmissions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          emissionType,
-          emissionValue,
-          badge,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log('Emission data saved:', result);
-      } else {
-        console.error('Error saving emission data:', result.error);
-        setError(result.error || 'Failed to save emission data.');
-      }
-    } catch (error) {
-      console.error('Error saving emission data:', error);
-      setError('Failed to save emission data.');
-    }
-  };
 
 
 
