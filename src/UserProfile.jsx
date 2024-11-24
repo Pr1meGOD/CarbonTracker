@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 
 const UserProfile = ({ user }) => {
   // Mock data fetching function to get the user's last calculated emissions
@@ -58,8 +59,7 @@ const UserProfile = ({ user }) => {
           <button
             className="mt-4 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-700 transition-colors"
             onClick={() => {
-              // Add navigation logic if needed
-              alert("Redirecting to emission tracking...");
+                <Link to="/user-profile"></Link> 
             }}
           >
             Track More Emissions

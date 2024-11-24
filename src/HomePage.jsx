@@ -1,11 +1,12 @@
-// HomePage.js
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Leaf, BarChart2, Globe, Users } from 'lucide-react';
 import bg from './assets/Images/home_page_bg.jpg';
 
 const HomePage = () => {
+  // Simulate user login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
     <div
       className="min-h-screen w-screen h-screen flex flex-col relative bg-cover bg-center bg-no-repeat overflow-x-hidden"
@@ -23,11 +24,19 @@ const HomePage = () => {
             </div>
             <nav>
               <ul className="flex space-x-4">
-                <li>
-                  <Link to="/auth" className="hover:text-green-400 cursor-pointer">
-                    Register / Login
-                  </Link>
-                </li>
+                {isLoggedIn ? (
+                  <li>
+                    <Link to="/user-profile" className="hover:text-green-400 cursor-pointer">
+                      Profile
+                    </Link>
+                  </li>
+                ) : (
+                  <li>
+                    <Link to="/auth" className="hover:text-green-400 cursor-pointer">
+                      Register / Login
+                    </Link>
+                  </li>
+                )}
                 <li>
                   <Link to="/AboutUs" className="hover:text-green-400 cursor-pointer">
                     About
@@ -56,7 +65,7 @@ const HomePage = () => {
 
           <section id="features" className="features container mx-auto p-16">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 cursor-pointer">
-              <Link to='/AccurateTrackingV3'>
+              <Link to="/AccurateTrackingV3">
                 <FeatureCard
                   icon={<BarChart2 className="h-12 w-12 text-green-500" />}
                   title="Accurate Tracking"
@@ -78,7 +87,6 @@ const HomePage = () => {
                 />
               </Link>
 
-              {/* Updated FeatureCard for Chatbot Link */}
               <Link to="/chat">
                 <FeatureCard
                   icon={<Users className="h-12 w-12 text-green-500" />}
