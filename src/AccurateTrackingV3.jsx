@@ -154,9 +154,13 @@ const AccurateTrackingV3 = () => {
           },
           { headers }
         );
+        
         badge = response.data.badge;
         emissionValue = response.data.homeEmission; // Assuming response.data.homeEmission is the correct field
-
+    
+        // Log the emission value to verify if it's being calculated correctly
+        console.log("Home Emission Value:", emissionValue);
+    
         setResults((prevResults) => ({
           ...prevResults,
           home: {
@@ -164,15 +168,19 @@ const AccurateTrackingV3 = () => {
             badge: badge,
           },
         }));
-
-        dataToSave = {
-          household_emissions: emissionValue, // Using the fetched emission value
-          home_Badge: badge, // Using the fetched badge
-        };
-
-        await saveEmissions(dataToSave);
-      }
-
+    
+        if (emissionValue !== undefined && emissionValue !== null) {
+            dataToSave = {
+              householdEmissions: emissionValue,  // Using the fetched emission value
+              home_Badge: badge,  // Using the fetched badge
+            };
+    
+            await saveEmissions(dataToSave);
+        } else {
+            console.error("Error: Household emission value is missing or invalid.");
+        }
+    }
+    
       // Show improvement tips based on badge
       setShowImprovementTip((prevTips) => ({
         ...prevTips,
