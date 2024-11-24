@@ -71,8 +71,7 @@ app.post('/api/login', (req, res) => {
 
 
 
-
-// Route: Store Emissions (Car, Bike, and Household)
+// Route to handle storing emissions
 app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     const {
         carEmissions,
