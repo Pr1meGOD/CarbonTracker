@@ -66,6 +66,11 @@ app.post('/api/login', (req, res) => {
     });
 });
 
+app.use((req, res, next) => {
+    const token = req.header('Authorization')?.split(' ')[1]; // Get token from Authorization header
+    if (!token) {
+      return res.status(401).json({ error: 'Token is required' });
+    }
 
 jwt.verify(token, 'your-secret-key', (err, decoded) => {
     if (err) {
@@ -74,6 +79,7 @@ jwt.verify(token, 'your-secret-key', (err, decoded) => {
    
     req.user = decoded;  
     next();  
+});
 });
 
 
