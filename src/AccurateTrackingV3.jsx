@@ -190,31 +190,6 @@ const AccurateTrackingV3 = () => {
   ))}
 </div>
 
-<div>
-  {results.home && (
-    <div>
-      <h3>Home Emission:</h3>
-      <p>Emission Value: {results.home.emissionValue}</p>
-      <p>Badge: {results.home.badge}</p>
-    </div>
-  )}
-
-  {results.car && (
-    <div>
-      <h3>Car Emission:</h3>
-      <p>Emission Value: {results.car.emissionValue}</p>
-      <p>Badge: {results.car.badge}</p>
-    </div>
-  )}
-
-  {results.bike && (
-    <div>
-      <h3>Bike Emission:</h3>
-      <p>Emission Value: {results.bike.emissionValue}</p>
-      <p>Badge: {results.bike.badge}</p>
-    </div>
-  )}
-</div>
 
   
             {/* Form goes here */}
@@ -324,7 +299,7 @@ const AccurateTrackingV3 = () => {
             </form>
   
           {/* Emission result display */}
-{results[activeCategory] && (
+          {results[activeCategory] && (
   <div className="mt-6 p-4 rounded bg-green-100 text-green-800">
     <p>
       Emission Result: 
@@ -339,6 +314,7 @@ const AccurateTrackingV3 = () => {
     <p>Badge: {results[activeCategory].badge}</p>
   </div>
 )}
+
 
 
             
