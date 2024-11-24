@@ -70,25 +70,51 @@ app.post('/api/login', (req, res) => {
 
 
 
+// Route: Store Emissions (Car, Bike, and Household)
 app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     const { carEmission, bikeEmission, homeEmission, badge } = req.body;
 
     // The user ID is extracted from the JWT token
     const userId = req.user.userId;
 
-    if (!carEmission || !bikeEmission || !homeEmission || !badge) {
-        return res.status(400).json({ error: 'All emission values and badge are required.' });
+    // Prepare dynamic query parts based on the provided data
+    const fieldsToUpdate = [];
+    const values = [];
+
+    if (carEmission !== undefined) {
+        fieldsToUpdate.push('car_emission = ?');
+        values.push(carEmission);
+    }
+    if (bikeEmission !== undefined) {
+        fieldsToUpdate.push('bike_emission = ?');
+        values.push(bikeEmission);
+    }
+    if (homeEmission !== undefined) {
+        fieldsToUpdate.push('household_emission = ?');
+        values.push(homeEmission);
+    }
+    if (badge !== undefined) {
+        fieldsToUpdate.push('badge = ?');
+        values.push(badge);
     }
 
-    // SQL Query to update the emissions for the user
+    // Check if there are fields to update
+    if (fieldsToUpdate.length === 0) {
+        return res.status(400).json({ error: 'No data provided to update.' });
+    }
+
+    // Add the user ID to the values array for the WHERE clause
+    values.push(userId);
+
+    // Construct the dynamic query
     const query = `
         UPDATE test_Users
-        SET car_emission = ?, bike_emission = ?, household_emission = ?, badge = ?, last_calculated_date = NOW()
+        SET ${fieldsToUpdate.join(', ')}, last_calculated_date = NOW()
         WHERE id = ?
     `;
 
     // Execute the query
-    db.query(query, [carEmission, bikeEmission, homeEmission, badge, userId], (err, result) => {
+    db.query(query, values, (err, result) => {
         if (err) {
             console.error('Error updating database:', err);
             return res.status(500).json({ error: 'Failed to save emission data.' });
@@ -101,6 +127,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         res.status(200).json({ message: 'Emission data saved successfully.' });
     });
 });
+
 
 
 
