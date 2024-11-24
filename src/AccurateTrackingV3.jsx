@@ -28,6 +28,14 @@ const AccurateTrackingV3 = () => {
   });
   const navigate = useNavigate();
 
+  // Ensure user is logged in using JWT
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/AuthenticationPage'); // Redirect to login if no token found
+    }
+  }, [navigate]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -35,39 +43,50 @@ const AccurateTrackingV3 = () => {
       [name]: value,
     }));
   };
-  
 
   const handleRedirectToTips = () => {
     navigate('/CarbonReductionTips');
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.error("No authentication token found.");
+      return;
+    }
+
     try {
       let response;
+      const headers = { Authorization: `Bearer ${token}` };
+
       if (activeCategory === 'bike') {
-        response = await axios.post('http://localhost:5000/api/calculateBikeEmission', {
-          cc: formData.bikeCC,
-          monthlyMileage: formData.bikeMileage,
-        });
+        response = await axios.post(
+          'http://localhost:5000/api/calculateBikeEmission',
+          { cc: formData.bikeCC, monthlyMileage: formData.bikeMileage },
+          { headers }
+        );
       } else if (activeCategory === 'car') {
-        response = await axios.post('http://localhost:5000/api/calculateCarEmission', {
-          carMileage: formData.carMileage,
-          carFuelType: formData.carFuelType,
-        });
+        response = await axios.post(
+          'http://localhost:5000/api/calculateCarEmission',
+          { carMileage: formData.carMileage, carFuelType: formData.carFuelType },
+          { headers }
+        );
       } else if (activeCategory === 'home') {
-        response = await axios.post('http://localhost:5000/api/calculateHomeEmission', {
-          electricityUsage: formData.electricity, // updated to electricityUsage
-          heatingUsage: formData.heating,         // updated to heatingUsage
-        });
+        response = await axios.post(
+          'http://localhost:5000/api/calculateHomeEmission',
+          { electricityUsage: formData.electricity, heatingUsage: formData.heating },
+          { headers }
+        );
       }
-  
+
       const { badge } = response.data;
       setResults((prevResults) => ({
         ...prevResults,
         [activeCategory]: response.data,
       }));
-  
+
       setShowImprovementTip((prevTips) => ({
         home: activeCategory === 'home' ? ['B', 'C', 'F'].includes(badge) : false,
         car: activeCategory === 'car' ? ['B', 'C', 'F'].includes(badge) : false,
@@ -77,13 +96,6 @@ const handleSubmit = async (e) => {
       console.error('Error calculating emission:', error);
     }
   };
-
-  
-
-
-  
-      
-
 
   const categories = [
     { id: 'home', name: 'Home', icon: <Home className="h-6 w-6" /> },
