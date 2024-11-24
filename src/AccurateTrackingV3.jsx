@@ -46,7 +46,7 @@ const AccurateTrackingV3 = () => {
 
   // Function to redirect to tips page
   const handleRedirectToTips = () => {
-    navigate("/CarbonReductionTips");
+    navigate('/CarbonReductionTips');
   };
 
   // Save emissions data to the backend
