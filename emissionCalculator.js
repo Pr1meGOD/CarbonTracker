@@ -14,21 +14,25 @@ app.use(express.json());
 
 
 
-const authMiddleware = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
+function authMiddleware(req, res, next) {
+    const token = req.header('Authorization')?.split(' ')[1];  // Extract token from 'Bearer token'
+    console.log('Received token:', token);  // Add this line to log the token
+
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized: No token provided.' });
     }
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = { userId: decoded.userId }; // Attach user ID to the request
+    jwt.verify(token, '1234', (err, decoded) => {
+        if (err) {
+            console.error('Token verification error:', err);
+            return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+        }
+
+        req.user = decoded;
         next();
-    } catch (err) {
-        console.error('Invalid token:', err);
-        res.status(401).json({ error: 'Unauthorized: Invalid token.' });
-    }
-};
+    });
+}
+
 
 
 
@@ -72,7 +76,7 @@ app.use((req, res, next) => {
       return res.status(401).json({ error: 'Token is required' });
     }
 
-jwt.verify(token, 'your-secret-key', (err, decoded) => {
+jwt.verify(token, '1234s', (err, decoded) => {
     if (err) {
         return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
     }
