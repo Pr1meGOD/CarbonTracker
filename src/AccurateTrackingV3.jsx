@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Leaf, Home, Car, Bike, ShoppingBag, Plane } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import bg from "./assets/Images/home_page_bg.jpg";
+
 
 const AccurateTrackingV3 = () => {
   const [activeCategory, setActiveCategory] = useState('home');
