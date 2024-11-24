@@ -62,7 +62,7 @@ const AccurateTrackingV3 = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Send the token as a Bearer token
         },
         body: JSON.stringify(dataToSave),
       });
@@ -92,6 +92,9 @@ const AccurateTrackingV3 = () => {
       const headers = { Authorization: `Bearer ${token}` };
       let badge, emissionValue;
 
+      // Depending on the active category, we calculate and send the corresponding data
+      let dataToSave = {};
+
       if (activeCategory === "bike") {
         response = await axios.post(
           "http://localhost:5000/api/calculateBikeEmission",
@@ -106,7 +109,12 @@ const AccurateTrackingV3 = () => {
           bike: { bikeEmission: emissionValue, badge },
         }));
 
-        await saveEmissions({ bikeEmissions: emissionValue, bike_badge: badge });
+        dataToSave = {
+          bikeEmissions: emissionValue,  // Using the fetched emission value
+          bike_Badge: badge,  // Using the fetched badge
+        };
+
+        await saveEmissions(dataToSave);
       } else if (activeCategory === "car") {
         response = await axios.post(
           "http://localhost:5000/api/calculateCarEmission",
@@ -121,7 +129,12 @@ const AccurateTrackingV3 = () => {
           car: { carEmission: emissionValue, badge },
         }));
 
-        await saveEmissions({ carEmissions: emissionValue, car_badge: badge });
+        dataToSave = {
+          carEmissions: emissionValue,  // Using the fetched emission value
+          car_Badge: badge,  // Using the fetched badge
+        };
+
+        await saveEmissions(dataToSave);
       } else if (activeCategory === "home") {
         response = await axios.post(
           "http://localhost:5000/api/calculateHomeEmission",
@@ -139,25 +152,19 @@ const AccurateTrackingV3 = () => {
           home: { homeEmission: emissionValue, badge },
         }));
 
-        await saveEmissions({ household_emissions: emissionValue, home_badge: badge });
-      }
+        dataToSave = {
+          household_emissions: emissionValue,  // Using the fetched emission value
+          home_Badge: badge,  // Using the fetched badge
+        };
 
-      setResults((prevResults) => ({
-        ...prevResults,
-        [activeCategory]: {
-          homeEmission: response.data.homeEmission,
-          carEmission: response.data.carEmission,
-          bikeEmission: response.data.bikeEmission,
-          badge: response.data.badge,
-        },
-      }));
+        await saveEmissions(dataToSave);
+      }
 
       // Show improvement tips based on badge
       setShowImprovementTip((prevTips) => ({
         ...prevTips,
         [activeCategory]: ["B", "C", "F"].includes(badge),
       }));
-
       
     } catch (error) {
       console.error("Error calculating emission:", error);
