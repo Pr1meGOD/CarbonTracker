@@ -134,6 +134,16 @@ const AccurateTrackingV3 = () => {
           car_Badge: badge,  // Using the fetched badge
         };
 
+        setResults((prevResults) => ({
+          ...prevResults,
+          [activeCategory]: {
+            homeEmission: response.data.homeEmission,
+            carEmission: response.data.carEmission,
+            bikeEmission: response.data.bikeEmission,
+            badge: response.data.badge,
+          },
+        }));
+
         await saveEmissions(dataToSave);
       } else if (activeCategory === "home") {
         response = await axios.post(
