@@ -13,6 +13,7 @@ app.use(express.json());
 
 const secretKey = 'your_secret_key';
 
+// Middleware for authenticating requests and attaching user data from JWT
 const authMiddleware = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
@@ -32,7 +33,7 @@ const authMiddleware = (req, res, next) => {
     });
 };
 
-// Login Route (Generates JWT Token)
+// Login Route: Verifies user credentials and returns a JWT token
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -66,10 +67,8 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-
-
-// Route: Store Emission Data
-app.post('/api/storeEmission', authMiddleware, async (req, res) => {
+// Route: Store Emission Data (Authenticated)
+app.post('/api/storeEmission', authMiddleware, (req, res) => {
     const { emissionType, emissionValue, badge } = req.body;
     const userId = req.user.userId; // Extracted from the token
 
@@ -90,39 +89,21 @@ app.post('/api/storeEmission', authMiddleware, async (req, res) => {
         WHERE id = ?
     `;
 
-    try {
-        // Execute the query to update the database
-        db.query(query, [emissionValue, badge, userId], (err, result) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
+    db.query(query, [emissionValue, badge, userId], (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
 
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ error: 'User not found' });
-            }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-            res.status(200).json({ message: 'Emission data saved successfully' });
-        });
-    } catch (err) {
-        console.error('Server error:', err);
-        res.status(500).json({ error: 'Server error' });
-    }
+        res.status(200).json({ message: 'Emission data saved successfully' });
+    });
 });
 
-
-
-// Configure MySQL Connection
-const db = mysql.createPool({
-    host: 'localhost',    // Update to your database host
-    user: 'root',         // Update to your database user
-    password: 'atharva@2212',         // Update to your database password
-    database: 'sem3_project' // Update to your database name
-});
-
-
-
-// Route: User Registration
+// User Registration Route
 app.post('/api/register', async (req, res) => {
     let { username, password } = req.body;
 
@@ -165,6 +146,15 @@ app.post('/api/register', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
+// Configure MySQL Connection
+const db = mysql.createPool({
+    host: 'localhost',    // Update to your database host
+    user: 'root',         // Update to your database user
+    password: 'atharva@2212', // Update to your database password
+    database: 'sem3_project', // Update to your database name
+});
+
 
 
 
@@ -258,46 +248,6 @@ app.post('/api/calculateHomeEmission', (req, res) => {
     res.json({ homeEmission, badge });
 });
 
-
-
-// Route: Store Emission Data
-app.post('/api/storeEmission', async (req, res) => {
-    const { user_id, emissionType, emissionValue, badge } = req.body;
-
-    if (!user_id || !emissionType || !emissionValue || !badge) {
-        return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    try {
-        // Prepare SQL query based on the emission type
-        let column;
-        if (emissionType === 'car') column = 'car_emissions';
-        else if (emissionType === 'bike') column = 'bike_emissions';
-        else if (emissionType === 'household') column = 'household_emissions';
-        else return res.status(400).json({ error: 'Invalid emission type' });
-
-        const query = `
-            UPDATE test_Users
-            SET ${column} = ?, badge = ?, calculation_date = CURRENT_TIMESTAMP
-            WHERE user_id = ?
-        `;
-
-        // Execute the query
-        db.query(query, [emissionValue, badge, user_id], (err, result) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            res.status(200).json({ message: 'Emission data stored successfully' });
-        });
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
-    }
-});
 
 
 // Start the server
