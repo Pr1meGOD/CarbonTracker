@@ -177,6 +177,12 @@ const AccurateTrackingV3 = () => {
     }
   };
 
+  const handleRedirectToTips = () => {
+    
+    console.log("Redirecting to tips page...");
+   
+    navigate('/tips'); 
+  };
   
 
   const categories = [
