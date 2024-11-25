@@ -138,9 +138,13 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         }
 
         // Successfully updated the emission data
-        res.status(200).json({ message: 'Emission data saved successfully.' });
+        res.status(200).json({
+            message: 'Emission data saved successfully.',
+            hasTrackedEmissions: true, // New flag indicating emissions have been tracked
+        });
     });
 });
+
 
 
 
