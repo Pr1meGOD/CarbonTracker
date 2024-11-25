@@ -54,8 +54,7 @@ const AccurateTrackingV3 = () => {
 
   async function saveEmissions(dataToSave) {
     try {
-      // Retrieve the token from localStorage
-      const token = localStorage.getItem("authToken");
+      let token = localStorage.getItem("authToken");
       if (!token) {
         console.error("No authentication token found. Ensure the user is logged in.");
         return;
@@ -82,6 +81,7 @@ const AccurateTrackingV3 = () => {
       console.error("Error while saving emissions:", error);
     }
   }
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
