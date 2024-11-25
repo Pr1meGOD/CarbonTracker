@@ -286,12 +286,15 @@ function calculateCarEmission(carMileage, carFuelType) {
         case 'electric':
             factor = 0.00013;
             break;
+        case 'petrol + cng':
+            factor = (0.000404 + 0.0002) / 2; 
+            break;
         default:
             factor = 0;
     }
-
     return carMileage * factor;
 }
+
 
 function calculateHomeEmission(electricityUsage, heatingUsage) {
     const electricityEmission = electricityUsage * 0.000743;

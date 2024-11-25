@@ -349,7 +349,7 @@ const AccurateTrackingV3 = () => {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-black p-2"
               >
                 <option value="">Select Fuel Type</option>
-                <option value="gasoline">Gasoline</option>
+                <option value="gasoline">Gasoline/Petrol</option>
                 <option value="diesel">Diesel</option>
                 <option value="hybrid">Hybrid</option>
                 <option value="electric">Electric</option>
