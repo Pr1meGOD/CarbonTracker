@@ -7,22 +7,69 @@ import bg from "./assets/Images/home_page_bg.jpg";
 const UserProfile = () => {
   const [user, setUser] = useState(null);
 
-  // Simulate fetching user and emissions data from the database
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("/api/user");
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-        const data = await response.json();
-        setUser(data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
+  // Function to fetch user data and render it on the profile page
+  const loadUserProfile = async () => {
+    const token = localStorage.getItem("authToken"); // Assuming token is stored in localStorage
+    if (!token) {
+      alert("You are not logged in.");
+      return;
+    }
 
-    fetchUserData();
+    try {
+      const response = await fetch("http://localhost:5000/api/userProfile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error fetching user profile:", errorData.error);
+        alert("Failed to fetch user data.");
+        return;
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+
+      // Populate the profile table with user data
+      const profileTable = document.getElementById("user-profile-table");
+      if (profileTable) {
+        profileTable.innerHTML = `
+          <tr>
+              <th>First Name</th>
+              <td>${userData.first_name}</td>
+          </tr>
+          <tr>
+              <th>Last Name</th>
+              <td>${userData.last_name}</td>
+          </tr>
+          <tr>
+              <th>Email</th>
+              <td>${userData.email}</td>
+          </tr>
+          <tr>
+              <th>Car Emissions</th>
+              <td>${userData.car_emissions}</td>
+          </tr>
+          <tr>
+              <th>Bike Emissions</th>
+              <td>${userData.bike_emissions}</td>
+          </tr>
+          <tr>
+              <th>Household Emissions</th>
+              <td>${userData.household_emissions}</td>
+          </tr>
+        `;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An unexpected error occurred.");
+    }
+  };
+
+  useEffect(() => {
+    loadUserProfile();
   }, []);
 
   return (
@@ -116,6 +163,9 @@ const UserProfile = () => {
                 </p>
               )}
             </div>
+            <table id="user-profile-table" className="mt-8 text-white">
+              {/* User profile data will be dynamically injected here */}
+            </table>
           </main>
         </div>
       </div>
