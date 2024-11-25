@@ -217,25 +217,47 @@ db.getConnection((err) => {
 });
 
 
-// Endpoint to fetch current user data
 app.get('/api/userProfile', authMiddleware, (req, res) => {
-    const userId = req.user.userId;
+    // Extract user ID from the authenticated request
+    const userId = req.user?.userId;
 
-    const query = 'SELECT first_name, last_name, email, car_emissions, bike_emissions, household_emissions FROM test_Users WHERE id = ?';
+    // Validate that userId exists
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is missing or invalid.' });
+    }
 
+    // SQL query to fetch user profile data
+    const query = `
+        SELECT 
+            Username,  
+            car_emissions, 
+            bike_emissions, 
+            household_emissions,
+            car_badge,
+            bike_badge,
+            home_badge
+        FROM test_Users 
+        WHERE id = ?
+    `;
+
+    // Execute the database query
     db.query(query, [userId], (err, results) => {
         if (err) {
-            console.error('Error fetching user data:', err);
-            return res.status(500).json({ error: 'Failed to retrieve user data.' });
+            console.error('Error fetching user data:', err.message);
+            return res.status(500).json({ error: 'Internal server error. Please try again later.' });
         }
 
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'User not found.' });
+        // Check if user was found
+        if (!results || results.length === 0) {
+            return res.status(404).json({ error: 'User not found. Please check the user ID.' });
         }
 
-        res.status(200).json(results[0]);
+        // Return user profile data
+        const userData = results[0]; // Extract the first result
+        return res.status(200).json(userData);
     });
 });
+
 
 
 
