@@ -80,6 +80,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         car_Badge,
         bike_Badge,
         home_Badge,
+        emissionComments, // New field
     } = req.body;
 
     // Check if user information is extracted properly from the JWT
@@ -96,6 +97,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         { key: 'car_badge', value: car_Badge },
         { key: 'bike_badge', value: bike_Badge },
         { key: 'home_badge', value: home_Badge },
+        { key: 'emission_comments', value: emissionComments }, // Added mapping
     ];
 
     const updates = [];
