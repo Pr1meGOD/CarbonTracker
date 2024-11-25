@@ -288,7 +288,7 @@ function calculateCarEmission(carMileage, carFuelType) {
             break;
         case 'petrol+cng':
             factor = (parseFloat(0.000404) + parseFloat(0.0002)) / 2;
-            //factor = 0.000404 + 0.0002 / 2; 
+           // factor = 0.000404 + 0.0002 / 2; 
             break;
         default:
             factor = 0;
