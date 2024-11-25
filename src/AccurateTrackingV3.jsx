@@ -50,35 +50,36 @@ const AccurateTrackingV3 = () => {
     navigate('/CarbonReductionTips');
   };
 
-
   async function saveEmissions(dataToSave) {
     try {
+      // Retrieve the token from localStorage
       const token = localStorage.getItem("authToken");
       if (!token) {
-        console.error("No authentication token found.");
+        console.error("No authentication token found. Ensure the user is logged in.");
         return;
       }
   
+      // Send the POST request to the backend
       const response = await fetch("http://localhost:5000/api/storeEmissions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Send the token as a Bearer token
+          Authorization: `Bearer ${token}`, // Attach the token properly
         },
-        body: JSON.stringify(dataToSave),
+        body: JSON.stringify(dataToSave), // Send the emission data
       });
   
+      // Handle the response
       const result = await response.json();
       if (response.ok) {
         console.log("Emission data saved successfully:", result.message);
       } else {
-        console.error("Failed to save emission data:", result.error);
+        console.error("Failed to save emission data:", result.error || result);
       }
     } catch (error) {
       console.error("Error while saving emissions:", error);
     }
   }
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -170,36 +171,21 @@ const AccurateTrackingV3 = () => {
         }));
     
         if (emissionValue !== undefined && emissionValue !== null) {
-            dataToSave = {
-              householdEmissions: emissionValue,  // Using the fetched emission value
-              home_Badge: badge,  // Using the fetched badge
-            };
+          dataToSave = {
+            householdEmissions: emissionValue,  // Using the fetched emission value
+            home_Badge: badge,  // Using the fetched badge
+          };
     
-            await saveEmissions(dataToSave);
+          await saveEmissions(dataToSave);
         } else {
-            console.error("Error: Household emission value is missing or invalid.");
+          console.error("Error: Household emission value is missing or invalid.");
         }
+      
+
     
-    
-   
-      fetch('/api/storeEmissions', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`, // Replace with actual token logic
-          },
-          body: JSON.stringify(emissionValue), // Replace with actual emission data
-      })
-          .then((response) => response.json())
-          .then((data) => {
-              if (data.hasTrackedEmissions) {
-                  localStorage.setItem('hasTrackedEmissions', 'true');
-              }
-          })
-          .catch((error) => {
-              console.error('Error tracking emissions:', error);
-          });
   };
+
+  
   
       // Show improvement tips based on badge
       setShowImprovementTip((prevTips) => ({
