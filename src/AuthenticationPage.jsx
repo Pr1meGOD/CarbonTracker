@@ -39,35 +39,42 @@ const AuthenticationPage = () => {
 
     try {
       const response = await fetch(
-        isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
+        isLoginMode
+          ? 'http://localhost:5000/api/login'
+          : 'http://localhost:5000/api/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            user_name, // Pass user_name to backend
-            password,
-          }),
+          body: JSON.stringify(
+            isLoginMode
+              ? { email, password } // For login, send email and password only
+              : { email, user_name, password } // For registration, send email, user_name, and password
+          ),
         }
       );
-
+    
       const data = await response.json();
-
+    
       if (response.ok) {
+        // Save JWT token to localStorage
+        localStorage.setItem('authToken', data.token);
+    
         setSuccessMessage(
           isLoginMode
             ? 'Login successful! Redirecting to the tracking page...'
             : 'Registration successful! Switching to login...'
         );
-
+    
         if (isLoginMode) {
+          // Simulate redirect after successful login
           setTimeout(() => {
-            navigate('/AccurateTrackingV3');
+            navigate('/AccurateTrackingV3'); // Redirect to tracking page
           }, 2000);
         } else {
+          // Switch to login mode after registration
           setTimeout(() => {
-            setIsLoginMode(true);
-            setSuccessMessage('');
+            setIsLoginMode(true); // Toggle to login mode
+            setSuccessMessage(''); // Clear success message after switching
           }, 2000);
         }
       } else {
@@ -76,7 +83,7 @@ const AuthenticationPage = () => {
     } catch (err) {
       setError('Something went wrong. Please try again.');
     }
-  };
+    
 
   return (
     <div
@@ -176,6 +183,6 @@ const AuthenticationPage = () => {
       </div>
     </div>
   );
-};
+};}
 
 export default AuthenticationPage;
