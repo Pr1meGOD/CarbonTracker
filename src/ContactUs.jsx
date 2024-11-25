@@ -29,6 +29,9 @@ function ContactUs() {
                 <li>
                   <Link to = '/AboutUs' className="hover:text-green-400 cursor-pointer">About</Link>
                 </li>
+                <li>
+                <Link to="/user-profile" className="hover:text-green-400 cursor-pointer">User Profile</Link>
+              </li>
               </ul>
             </nav>
           </div>

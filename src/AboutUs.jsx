@@ -63,6 +63,9 @@ const AboutUs = () => {
                 <li>
                 <Link to="/contact_us" className='hover:text-green-400 cursor-pointer'>Contact Us</Link>
                 </li>
+                <li>
+                <Link to="/user-profile" className="hover:text-green-400 cursor-pointer">User Profile</Link>
+              </li>
               </ul>
             </nav>
           </div>

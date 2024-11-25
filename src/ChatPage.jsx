@@ -71,6 +71,9 @@ const ChatPage = () => {
                 </li>
                 <Link to = '/AccurateTrackingV3' className='hover:text-green-400 cursor-pointer'>Track</Link>
               </ul>
+              <li>
+                <Link to="/user-profile" className="hover:text-green-400 cursor-pointer">User Profile</Link>
+              </li>
             </nav>
           </div>
         </header>
