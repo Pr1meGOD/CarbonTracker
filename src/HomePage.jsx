@@ -7,16 +7,16 @@ const HomePage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
-  // Check if the user is logged in when the component mounts
+  // Check for token on component mount
   useEffect(() => {
-    const loggedInState = localStorage.getItem('isLoggedIn');
-    setIsLoggedIn(loggedInState === 'true');
+    const token = localStorage.getItem('token'); // Check for token
+    setIsLoggedIn(!!token); // Set logged-in state based on token presence
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    setIsLoggedIn(false);
-    navigate('/'); // Redirect to the home page after logout
+    localStorage.removeItem('token'); // Remove token from localStorage
+    setIsLoggedIn(false); // Reset login state
+    navigate('/'); // Redirect to home page
   };
 
   return (
