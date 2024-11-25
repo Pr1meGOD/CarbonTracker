@@ -157,15 +157,6 @@ const UserProfile = () => {
                 </p>
               )}
             </div>
-            <div id="profile-container" className="mt-8 p-4 bg-white rounded-lg shadow-md">
-    <h2 className="text-2xl font-bold text-gray-800 mb-4">User Profile</h2>
-    <table
-      id="user-profile-table"
-      className="w-full border-collapse border border-gray-300"
-    >
-      {/* User data will be dynamically injected here */}
-    </table>
-  </div>
           </main>
         </div>
       </div>
