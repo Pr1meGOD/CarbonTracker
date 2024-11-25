@@ -228,27 +228,31 @@ const AccurateTrackingV3 = () => {
       style={{ backgroundImage: `url(${bg})` }}
     >
       <div className="bg-black absolute top-0 right-0 left-0 w-full h-full bg-opacity-45">
-        <header className="top-0 bg-black bg-opacity-30 text-white p-4">
-          <div className="container mx-auto flex justify-between items-center">
-            <div className="text-2xl font-bold flex items-center hover:text-green-400 transition-colors cursor-pointer">
-              <Leaf className="mr-2" />
-              CarbonTrack
-            </div>
-            <nav>
-              <ul className="flex space-x-6">
-                <li>
-                  <Link to="/" className="hover:text-green-400 cursor-pointer">Home</Link>
-                </li>
-                <li>
-                  <Link to="/AboutUs" className="hover:text-green-400 cursor-pointer">About</Link>
-                </li>
-                <li>
-                  <Link to="/contact_us" className="hover:text-green-400 cursor-pointer">Contact Us</Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </header>
+      <header className="top-0 bg-black bg-opacity-30 text-white p-4">
+  <div className="container mx-auto flex justify-between items-center">
+    <div className="text-2xl font-bold flex items-center hover:text-green-400 transition-colors cursor-pointer">
+      <Leaf className="mr-2" />
+      CarbonTrack
+    </div>
+    <nav>
+      <ul className="flex space-x-6">
+        <li>
+          <Link to="/" className="hover:text-green-400 cursor-pointer">Home</Link>
+        </li>
+        <li>
+          <Link to="/AboutUs" className="hover:text-green-400 cursor-pointer">About</Link>
+        </li>
+        <li>
+          <Link to="/contact_us" className="hover:text-green-400 cursor-pointer">Contact Us</Link>
+        </li>
+        <li>
+          <Link to="/user_dashboard" className="hover:text-green-400 cursor-pointer">User Dashboard</Link>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
   
         <main className="flex-grow container mx-auto py-12 px-4">
           <h1 className="text-4xl font-bold mb-8 text-center text-white">Accurate Carbon Footprint Tracking</h1>
