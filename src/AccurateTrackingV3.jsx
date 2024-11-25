@@ -246,7 +246,7 @@ const AccurateTrackingV3 = () => {
           <Link to="/contact_us" className="hover:text-green-400 cursor-pointer">Contact Us</Link>
         </li>
         <li>
-          <Link to="/user_dashboard" className="hover:text-green-400 cursor-pointer">User Dashboard</Link>
+          <Link to="/user-profile" className="hover:text-green-400 cursor-pointer">User Profile</Link>
         </li>
       </ul>
     </nav>
