@@ -36,15 +36,15 @@ function authMiddleware(req, res, next) {
 
 // Login Route: Verifies user credentials and returns a JWT token
 app.post('/api/login', (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body; // Accept `email` and `password` from the frontend
 
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const query = 'SELECT * FROM test_Users WHERE username = ?';
+    const query = 'SELECT * FROM test_Users WHERE username = ?'; // Search by the `username` column (email)
 
-    db.query(query, [username], async (err, results) => {
+    db.query(query, [email], async (err, results) => {
         if (err) return res.status(500).json({ error: 'Database error' });
 
         if (results.length === 0) {
@@ -59,7 +59,7 @@ app.post('/api/login', (req, res) => {
         }
 
         // Generate JWT Token
-        const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '3h' });
+        const token = jwt.sign({ userId: user.id, userName: user.user_name }, secretKey, { expiresIn: '3h' });
 
         res.status(200).json({
             message: 'Login successful',
@@ -67,6 +67,7 @@ app.post('/api/login', (req, res) => {
         });
     });
 });
+
 
 
 
@@ -157,18 +158,19 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
 
 // User Registration Route
 app.post('/api/register', async (req, res) => {
-    let { username, password } = req.body;
+    let { email, user_name, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
+    if (!email || !user_name || !password) {
+        return res.status(400).json({ error: 'Email, username, and password are required' });
     }
 
     // Sanitize inputs
-    username = username.trim();
+    email = email.trim();
+    user_name = user_name.trim();
     password = password.trim();
 
     // Validate email
-    if (!validator.isEmail(username)) {
+    if (!validator.isEmail(email)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
@@ -181,12 +183,12 @@ app.post('/api/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
         db.query(
-            'INSERT INTO test_Users (username, password) VALUES (?, ?)',
-            [username, hashedPassword],
+            'INSERT INTO test_Users (username, user_name, password) VALUES (?, ?, ?)',
+            [email, user_name, hashedPassword], // Use email for username, user_name for new column
             (err, result) => {
                 if (err) {
                     if (err.code === 'ER_DUP_ENTRY') {
-                        return res.status(400).json({ error: 'Username already exists' });
+                        return res.status(400).json({ error: 'Email or username already exists' });
                     }
                     return res.status(500).json({ error: err.message });
                 }
@@ -201,12 +203,11 @@ app.post('/api/register', async (req, res) => {
 
 // Configure MySQL Connection
 const db = mysql.createPool({
-    host: 'localhost',    
-    user: 'root',         
-    password: 'atharva@2212', 
-    database: 'sem3_project', 
+    host: 'localhost',
+    user: 'root',
+    password: 'atharva@2212',
+    database: 'sem3_project',
 });
-
 
 db.getConnection((err) => {
     if (err) {
@@ -215,6 +216,10 @@ db.getConnection((err) => {
     }
     console.log('Database connected successfully.');
 });
+
+
+
+
 
 
 app.get('/api/userProfile', authMiddleware, (req, res) => {
