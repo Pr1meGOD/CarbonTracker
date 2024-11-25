@@ -98,6 +98,7 @@ app.post('/api/login', async (req, res) => {
 
 
 
+
 // Route to handle storing emissions
 app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     const {
