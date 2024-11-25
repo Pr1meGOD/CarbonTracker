@@ -16,8 +16,6 @@ const AccurateTrackingV3 = () => {
     carFuelType: "",
     bikeMileage: "",
     bikeCC: "",
-    meatConsumption: "",
-    flights: "",
   });
   const [results, setResults] = useState({
     home: null,
@@ -216,8 +214,6 @@ const AccurateTrackingV3 = () => {
     { id: "home", name: "Home", icon: <Home className="h-6 w-6" /> },
     { id: "car", name: "Car", icon: <Car className="h-6 w-6" /> },
     { id: "bike", name: "Bike", icon: <Bike className="h-6 w-6" /> },
-    { id: "food", name: "Food", icon: <ShoppingBag className="h-6 w-6" /> },
-    { id: "flight", name: "Flight", icon: <Plane className="h-6 w-6" /> },
   ];
 
 
