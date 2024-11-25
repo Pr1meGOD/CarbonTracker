@@ -18,10 +18,20 @@ const AuthenticationPage = () => {
     setError('');
     setSuccessMessage('');
 
-    if (!email || !user_name || !password || !confirmPassword) {
-      setError('Please fill in all fields.');
-      return;
+    if (isLoginMode) {
+      // Validation for login
+      if (!email || !password) {
+        setError('Please fill in all fields.');
+        return;
+      }
+    } else {
+      // Validation for registration
+      if (!email || !user_name || !password || !confirmPassword) {
+        setError('Please fill in all fields.');
+        return;
+      }
     }
+    
 
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
