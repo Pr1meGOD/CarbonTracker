@@ -239,9 +239,6 @@ app.get('/api/userProfile', authMiddleware, (req, res) => {
 
 
 
-
-
-
 // Function to calculate emissions for bike, car, and home
 function calculateBikeEmission(cc, monthlyMileage) {
     let emissionFactor;
