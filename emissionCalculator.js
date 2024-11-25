@@ -35,38 +35,58 @@ function authMiddleware(req, res, next) {
 
 
 // Login Route: Verifies user credentials and returns a JWT token
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { email, password } = req.body; // Accept `email` and `password` from the frontend
 
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const query = 'SELECT * FROM test_Users WHERE username = ?'; // Search by the `username` column (email)
+    try {
+        const query = 'SELECT * FROM test_Users WHERE username = ?'; // Search by the `username` column (email)
 
-    db.query(query, [email], async (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        db.query(query, [email], async (err, results) => {
+            if (err) {
+                console.error('Database query error:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
 
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'User not found' });
-        }
+            if (results.length === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
 
-        const user = results[0];
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+            const user = results[0];
 
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid password' });
-        }
+            // Check if the password is valid
+            try {
+                const isPasswordValid = await bcrypt.compare(password, user.password);
 
-        // Generate JWT Token
-        const token = jwt.sign({ userId: user.id, userName: user.user_name }, secretKey, { expiresIn: '3h' });
+                if (!isPasswordValid) {
+                    return res.status(401).json({ error: 'Invalid password' });
+                }
 
-        res.status(200).json({
-            message: 'Login successful',
-            token,
+                // Generate JWT Token
+                const token = jwt.sign(
+                    { userId: user.id, userName: user.user_name },
+                    secretKey,
+                    { expiresIn: '3h' }
+                );
+
+                return res.status(200).json({
+                    message: 'Login successful',
+                    token,
+                });
+            } catch (bcryptError) {
+                console.error('Password comparison error:', bcryptError);
+                return res.status(500).json({ error: 'Error processing password validation' });
+            }
         });
-    });
+    } catch (error) {
+        console.error('Unexpected server error:', error);
+        return res.status(500).json({ error: 'Server error. Please try again later.' });
+    }
 });
+
 
 
 

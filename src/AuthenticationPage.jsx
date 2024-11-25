@@ -30,13 +30,12 @@ const AuthenticationPage = () => {
         setError('Please fill in all fields.');
         return;
       }
+      if (password !== confirmPassword) {
+        setError('Passwords do not match.');
+        return;
+      }
     }
     
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
 
     try {
       const response = await fetch(
