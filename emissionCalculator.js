@@ -100,17 +100,16 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         car_Badge,
         bike_Badge,
         home_Badge,
-        emissionComments, // Optional: New field
+        emissionComments,
     } = req.body;
 
-    // Ensure the user information is extracted correctly from the JWT
+    // Check if user information is extracted properly from the JWT
     if (!req.user || !req.user.userId) {
         return res.status(401).json({ error: 'Unauthorized: Invalid or missing user information.' });
     }
+    const userId = req.user.userId;
 
-    const userId = req.user.userId; // User ID from JWT
-
-    // Map valid fields to database column names
+    // Map valid input fields to database column names
     const validFields = [
         { key: 'car_emissions', value: carEmissions },
         { key: 'bike_emissions', value: bikeEmissions },
@@ -118,7 +117,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         { key: 'car_badge', value: car_Badge },
         { key: 'bike_badge', value: bike_Badge },
         { key: 'home_badge', value: home_Badge },
-        { key: 'emission_comments', value: emissionComments }, // Added optional field
+        { key: 'emission_comments', value: emissionComments },
     ];
 
     const updates = [];
@@ -126,13 +125,13 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
 
     // Iterate through valid fields and prepare the query updates
     validFields.forEach((field) => {
-        if (field.value !== undefined && field.value !== null) {
+        if (field.value !== undefined) {
             updates.push(`${field.key} = ?`);
             values.push(field.value);
         }
     });
 
-    // Automatically update the last calculated date field
+    // Include the automatic update of the last_calculated_date column
     updates.push('calculation_date = NOW()');
 
     // Check if there are fields to update (excluding only calculation_date)
@@ -163,7 +162,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         // Successfully updated the emission data
         res.status(200).json({
             message: 'Emission data saved successfully.',
-            hasTrackedEmissions: true, // Flag indicating emissions have been tracked
+            hasTrackedEmissions: true, // New flag indicating emissions have been tracked
         });
     });
 });

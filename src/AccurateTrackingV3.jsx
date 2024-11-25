@@ -50,6 +50,7 @@ const AccurateTrackingV3 = () => {
     navigate('/CarbonReductionTips');
   };
 
+
   async function saveEmissions(dataToSave) {
     try {
       const token = localStorage.getItem("authToken");
@@ -57,7 +58,7 @@ const AccurateTrackingV3 = () => {
         console.error("No authentication token found.");
         return;
       }
-
+  
       const response = await fetch("http://localhost:5000/api/storeEmissions", {
         method: "POST",
         headers: {
@@ -66,7 +67,7 @@ const AccurateTrackingV3 = () => {
         },
         body: JSON.stringify(dataToSave),
       });
-
+  
       const result = await response.json();
       if (response.ok) {
         console.log("Emission data saved successfully:", result.message);
@@ -77,6 +78,7 @@ const AccurateTrackingV3 = () => {
       console.error("Error while saving emissions:", error);
     }
   }
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
