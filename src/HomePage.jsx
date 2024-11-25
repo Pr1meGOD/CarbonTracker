@@ -1,11 +1,23 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, BarChart2, Globe, Users } from 'lucide-react';
 import bg from './assets/Images/home_page_bg.jpg';
 
 const HomePage = () => {
-  // Simulate user login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  // Check if the user is logged in when the component mounts
+  useEffect(() => {
+    const loggedInState = localStorage.getItem('isLoggedIn');
+    setIsLoggedIn(loggedInState === 'true');
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    setIsLoggedIn(false);
+    navigate('/'); // Redirect to the home page after logout
+  };
 
   return (
     <div
@@ -25,11 +37,21 @@ const HomePage = () => {
             <nav>
               <ul className="flex space-x-4">
                 {isLoggedIn ? (
-                  <li>
-                    <Link to="/user-profile" className="hover:text-green-400 cursor-pointer">
-                      Profile
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link to="/user-profile" className="hover:text-green-400 cursor-pointer">
+                        User Dashboard
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="hover:text-green-400 cursor-pointer"
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </>
                 ) : (
                   <li>
                     <Link to="/auth" className="hover:text-green-400 cursor-pointer">
@@ -58,7 +80,10 @@ const HomePage = () => {
             <p className="text-xl mb-8">
               Make a positive impact on the environment with our advanced carbon tracking system
             </p>
-            <div className="hover:bg-green-950 hover:text-white text-green-400 hover:border-transparent border-green-400 border-2 py-2 px-6 rounded-lg text-lg inline-block cursor-pointer">
+            <div
+              className="hover:bg-green-950 hover:text-white text-green-400 hover:border-transparent border-green-400 border-2 py-2 px-6 rounded-lg text-lg inline-block cursor-pointer"
+              onClick={() => navigate('/auth')}
+            >
               Get Started
             </div>
           </section>
