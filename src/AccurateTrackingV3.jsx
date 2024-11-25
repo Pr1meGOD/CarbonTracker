@@ -54,7 +54,8 @@ const AccurateTrackingV3 = () => {
 
   async function saveEmissions(dataToSave) {
     try {
-      let token = localStorage.getItem("authToken");
+      // Retrieve the token from localStorage
+      const token = localStorage.getItem("authToken");
       if (!token) {
         console.error("No authentication token found. Ensure the user is logged in.");
         return;
@@ -75,12 +76,18 @@ const AccurateTrackingV3 = () => {
       if (response.ok) {
         console.log("Emission data saved successfully:", result.message);
       } else {
-        console.error("Failed to save emission data:", result.error || result);
+        if (result.error && result.error.includes('Unauthorized')) {
+          console.error("Token has expired. Please log in again.");
+          // Optionally, you can add logic to refresh the token or redirect to the login page
+        } else {
+          console.error("Failed to save emission data:", result.error || result);
+        }
       }
     } catch (error) {
       console.error("Error while saving emissions:", error);
     }
   }
+  
   
 
   const handleSubmit = async (e) => {
