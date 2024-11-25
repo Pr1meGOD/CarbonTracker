@@ -286,8 +286,9 @@ function calculateCarEmission(carMileage, carFuelType) {
         case 'electric':
             factor = 0.00013;
             break;
-        case 'petrol + cng':
-            factor = (0.000404 + 0.0002) / 2; 
+        case 'petrol+cng':
+            factor = (parseFloat(0.000404) + parseFloat(0.0002)) / 2;
+            //factor = 0.000404 + 0.0002 / 2; 
             break;
         default:
             factor = 0;

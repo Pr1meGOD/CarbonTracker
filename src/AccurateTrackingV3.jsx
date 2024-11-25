@@ -353,6 +353,7 @@ const AccurateTrackingV3 = () => {
                 <option value="diesel">Diesel</option>
                 <option value="hybrid">Hybrid</option>
                 <option value="electric">Electric</option>
+                <option value="petrol+cng">Petrol + CNG</option>
               </select>
             </div>
           </>
