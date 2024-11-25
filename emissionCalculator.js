@@ -12,25 +12,32 @@ const secretKey = '1234';
 app.use(cors());
 app.use(express.json());
 
+
 function authMiddleware(req, res, next) {
+    // Retrieve the token from the Authorization header
     const token = req.header('Authorization')?.split(' ')[1];  
     console.log('Received token:', token);  
 
+    // Check if the token is provided
     if (!token) {
+        console.error('No token provided.');
         return res.status(401).json({ error: 'Unauthorized: No token provided.' });
     }
 
+    // Verify the token
     jwt.verify(token, '1234', (err, decoded) => {
         if (err) {
             console.error('Token verification error:', err);
             return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
         }
 
+        // Attach user information to the request object
         req.user = decoded;
-        next();
+        next(); // Proceed to the next middleware or route handler
     });
 }
 
+module.exports = authMiddleware; // Make sure to export your middleware if needed
 
 
 
@@ -67,7 +74,7 @@ app.post('/api/login', async (req, res) => {
                 const token = jwt.sign(
                     { userId: user.id, userName: user.username },
                     secretKey,
-                    { expiresIn: '3h' }
+                    { expiresIn: '100d' }
                 );
 
                 res.status(200).json({

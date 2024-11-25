@@ -29,6 +29,8 @@ const AccurateTrackingV3 = () => {
   });
   const navigate = useNavigate();
 
+
+
   // Ensure user is logged in using JWT
   useEffect(() => {
     const token = localStorage.getItem("authToken");
