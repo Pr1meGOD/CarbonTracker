@@ -34,21 +34,10 @@ const AccurateTrackingV3 = () => {
   // Ensure user is logged in using JWT
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    if (!token || isTokenExpired(token)) {
-      console.error("Token is missing or expired. Redirecting to login.");
-      navigate("/AuthenticationPage"); // Redirect to login if no token found or expired
+    if (!token) {
+      navigate("/AuthenticationPage"); // Redirect to login if no token found
     }
   }, [navigate]);
-
-  const isTokenExpired = (token) => {
-    try {
-      const decoded = jwt.decode(token);
-      return decoded.exp < Date.now() / 1000; // Check if the token is expired
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      return true; // Assume expired if there's an error
-    }
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -67,11 +56,11 @@ const AccurateTrackingV3 = () => {
     try {
       // Retrieve the token from localStorage
       const token = localStorage.getItem("authToken");
-      if (!token || isTokenExpired(token)) {
-        console.error("No valid authentication token found. Ensure the user is logged in.");
+      if (!token) {
+        console.error("No authentication token found. Ensure the user is logged in.");
         return;
       }
-
+  
       // Send the POST request to the backend
       const response = await fetch("http://localhost:5000/api/storeEmissions", {
         method: "POST",
@@ -81,17 +70,13 @@ const AccurateTrackingV3 = () => {
         },
         body: JSON.stringify(dataToSave), // Send the emission data
       });
-
+  
       // Handle the response
       const result = await response.json();
       if (response.ok) {
         console.log("Emission data saved successfully:", result.message);
       } else {
         console.error("Failed to save emission data:", result.error || result);
-        if (result.error === "Unauthorized: Invalid token.") {
-          localStorage.removeItem("authToken"); // Clear invalid token
-          navigate("/AuthenticationPage"); // Redirect to login on invalid token
-        }
       }
     } catch (error) {
       console.error("Error while saving emissions:", error);
@@ -103,12 +88,14 @@ const AccurateTrackingV3 = () => {
 
     try {
       const token = localStorage.getItem("authToken");
-      if (!token || isTokenExpired(token)) {
-        console.error("No valid authentication token found.");
+      if (!token) {
+        console.error("No authentication token found.");
         return;
       }
 
-      let badge, emissionValue; 
+      let response;
+      const headers = { Authorization: `Bearer ${token}` };
+      let badge, emissionValue;
 
       // Depending on the active category, we calculate and send the corresponding data
       let dataToSave = {};
