@@ -107,17 +107,11 @@ const UserProfile = () => {
                   Contact Us
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/user-profile"
-                  className="hover:text-green-400 cursor-pointer"
-                >
-                  User Profile
-                </Link>
-              </li>
+              
             </ul>
           </nav>
         </div>
+        
       </header>
       <div className="flex-grow relative text-white z-10">
         <div className="container mx-auto py-8 px-6">
@@ -163,9 +157,15 @@ const UserProfile = () => {
                 </p>
               )}
             </div>
-            <table id="user-profile-table" className="mt-8 text-white">
-              {/* User profile data will be dynamically injected here */}
-            </table>
+            <div id="profile-container" className="mt-8 p-4 bg-white rounded-lg shadow-md">
+    <h2 className="text-2xl font-bold text-gray-800 mb-4">User Profile</h2>
+    <table
+      id="user-profile-table"
+      className="w-full border-collapse border border-gray-300"
+    >
+      {/* User data will be dynamically injected here */}
+    </table>
+  </div>
           </main>
         </div>
       </div>
