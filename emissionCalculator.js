@@ -13,29 +13,21 @@ app.use(cors());
 app.use(express.json());
 
 
-function authMiddleware(req, res, next) {
-    // Retrieve the token from the Authorization header
-    const token = req.header('Authorization')?.split(' ')[1];  
-    console.log('Received token:', token);  
-
-    // Check if the token is provided
-    if (!token) {
-        console.error('No token provided.');
-        return res.status(401).json({ error: 'Unauthorized: No token provided.' });
+const authMiddleware = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Unauthorized: Missing token.' });
     }
-
-    // Verify the token
-    jwt.verify(token, '1234', (err, decoded) => {
-        if (err) {
-            console.error('Token verification error:', err);
-            return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
-        }
-
-        // Attach user information to the request object
-        req.user = decoded;
-        next(); // Proceed to the next middleware or route handler
+  
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, secretKey, (err, user) => {
+      if (err) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+      }
+      req.user = user; // Attach user information to the request object
+      next();
     });
-}
+  };
 
 module.exports = authMiddleware; // Make sure to export your middleware if needed
 
