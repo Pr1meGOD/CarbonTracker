@@ -123,8 +123,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         { key: 'household_emissions', value: householdEmissions },
         { key: 'car_badge', value: car_Badge },
         { key: 'bike_badge', value: bike_Badge },
-        { key: 'home_badge', value: home_Badge },
-        { key: 'emission_comments', value: emissionComments },
+        { key: 'home_badge', value: home_Badge }
     ];
 
     const updates = [];
