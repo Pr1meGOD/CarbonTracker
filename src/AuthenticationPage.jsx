@@ -19,13 +19,11 @@ const AuthenticationPage = () => {
     setSuccessMessage('');
 
     if (isLoginMode) {
-      // Validation for login
       if (!email || !password) {
         setError('Please fill in all fields.');
         return;
       }
     } else {
-      // Validation for registration
       if (!email || !user_name || !password || !confirmPassword) {
         setError('Please fill in all fields.');
         return;
@@ -35,7 +33,6 @@ const AuthenticationPage = () => {
         return;
       }
     }
-    
 
     try {
       const response = await fetch(
@@ -52,29 +49,24 @@ const AuthenticationPage = () => {
           ),
         }
       );
-    
+
       const data = await response.json();
-    
+
       if (response.ok) {
-        // Save JWT token to localStorage
-        localStorage.setItem('authToken', data.token);
-    
         setSuccessMessage(
           isLoginMode
             ? 'Login successful! Redirecting to the tracking page...'
             : 'Registration successful! Switching to login...'
         );
-    
+
         if (isLoginMode) {
-          // Simulate redirect after successful login
           setTimeout(() => {
-            navigate('/AccurateTrackingV3'); // Redirect to tracking page
+            navigate('/AccurateTrackingV3'); // Navigate to another page after successful login
           }, 2000);
         } else {
-          // Switch to login mode after registration
           setTimeout(() => {
-            setIsLoginMode(true); // Toggle to login mode
-            setSuccessMessage(''); // Clear success message after switching
+            setIsLoginMode(true);
+            setSuccessMessage('');
           }, 2000);
         }
       } else {
@@ -83,7 +75,8 @@ const AuthenticationPage = () => {
     } catch (err) {
       setError('Something went wrong. Please try again.');
     }
-    
+  };
+
 
   return (
     <div
@@ -183,6 +176,6 @@ const AuthenticationPage = () => {
       </div>
     </div>
   );
-};}
+};
 
 export default AuthenticationPage;

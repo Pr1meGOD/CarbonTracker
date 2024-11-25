@@ -43,7 +43,7 @@ app.post('/api/login', async (req, res) => {
     }
 
     try {
-        const query = 'SELECT * FROM test_Users WHERE username = ?'; // Search by the `username` column (email)
+        const query = 'SELECT * FROM test_Users WHERE username = ?'; // Search by `username` (email)
 
         db.query(query, [email], async (err, results) => {
             if (err) {
@@ -57,7 +57,6 @@ app.post('/api/login', async (req, res) => {
 
             const user = results[0];
 
-            // Check if the password is valid
             try {
                 const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -65,14 +64,13 @@ app.post('/api/login', async (req, res) => {
                     return res.status(401).json({ error: 'Invalid password' });
                 }
 
-                // Generate JWT Token
                 const token = jwt.sign(
                     { userId: user.id, userName: user.user_name },
                     secretKey,
                     { expiresIn: '3h' }
                 );
 
-                return res.status(200).json({
+                res.status(200).json({
                     message: 'Login successful',
                     token,
                 });
@@ -86,6 +84,7 @@ app.post('/api/login', async (req, res) => {
         return res.status(500).json({ error: 'Server error. Please try again later.' });
     }
 });
+
 
 
 
@@ -178,48 +177,45 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
 
 // User Registration Route
 app.post('/api/register', async (req, res) => {
-    let { email, user_name, password } = req.body;
+    let { email, user_name, password } = req.body; // Updated to include user_name
 
     if (!email || !user_name || !password) {
         return res.status(400).json({ error: 'Email, username, and password are required' });
     }
 
-    // Sanitize inputs
     email = email.trim();
     user_name = user_name.trim();
     password = password.trim();
 
-    // Validate email
     if (!validator.isEmail(email)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    // Validate password strength (e.g., minimum length of 6 characters)
     if (password.length < 6) {
         return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        db.query(
-            'INSERT INTO test_Users (username, user_name, password) VALUES (?, ?, ?)',
-            [email, user_name, hashedPassword], // Use email for username, user_name for new column
-            (err, result) => {
-                if (err) {
-                    if (err.code === 'ER_DUP_ENTRY') {
-                        return res.status(400).json({ error: 'Email or username already exists' });
-                    }
-                    return res.status(500).json({ error: err.message });
+        const query = 'INSERT INTO test_Users (username, user_name, password) VALUES (?, ?, ?)';
+
+        db.query(query, [email, user_name, hashedPassword], (err, result) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.status(400).json({ error: 'Email already exists' });
                 }
-
-                res.status(201).json({ message: 'User registered successfully' });
+                return res.status(500).json({ error: 'Database error' });
             }
-        );
+
+            res.status(201).json({ message: 'User registered successfully' });
+        });
     } catch (err) {
+        console.error('Error during registration:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 // Configure MySQL Connection
 const db = mysql.createPool({
