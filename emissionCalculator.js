@@ -157,13 +157,14 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
 
 // User Registration Route
 app.post('/api/register', async (req, res) => {
-    let { username, password } = req.body;
+    let { user_name, username, password } = req.body; // Accept user_name as a separate field
 
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
+    if (!user_name || !username || !password) {
+        return res.status(400).json({ error: 'Name, email, and password are required' });
     }
 
     // Sanitize inputs
+    user_name = user_name.trim();
     username = username.trim();
     password = password.trim();
 
@@ -181,12 +182,13 @@ app.post('/api/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
         db.query(
-            'INSERT INTO test_Users (username, password) VALUES (?, ?)',
-            [username, hashedPassword],
+            // Query now distinguishes between username (email) and user_name (actual name)
+            'INSERT INTO test_Users (user_name, username, password) VALUES (?, ?, ?)',
+            [user_name, username, hashedPassword], // Pass user_name, username, and hashed password
             (err, result) => {
                 if (err) {
                     if (err.code === 'ER_DUP_ENTRY') {
-                        return res.status(400).json({ error: 'Username already exists' });
+                        return res.status(400).json({ error: 'Email already exists' });
                     }
                     return res.status(500).json({ error: err.message });
                 }
@@ -206,7 +208,6 @@ const db = mysql.createPool({
     password: 'atharva@2212', 
     database: 'sem3_project', 
 });
-
 
 db.getConnection((err) => {
     if (err) {

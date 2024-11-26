@@ -1,42 +1,50 @@
-import React ,{ useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import bg from "./assets/Images/home_page_bg.jpg";
 import { Leaf } from 'lucide-react';
-import axios from 'axios'; 
 
 const AuthenticationPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [userName, setUserName] = useState('');
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); // State for success message
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
 
-    // Input validation to check if email and password fields are filled
-    if (!email || !password) {
+    if (!email || !password || (!isLoginMode && (!userName || !confirmPassword))) {
       setError('Please fill in all fields.');
       return;
     }
 
+    if (!isLoginMode && password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     try {
+      const payload = isLoginMode
+        ? { username: email, password }
+        : { username: email, password, user_name: userName };
+
       const response = await fetch(
         isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: email, password }), // Match backend field names
+          body: JSON.stringify(payload),
         }
       );
 
       const data = await response.json();
 
       if (response.ok) {
-        // Save JWT token to localStorage
         localStorage.setItem('authToken', data.token);
 
         setSuccessMessage(
@@ -46,15 +54,11 @@ const AuthenticationPage = () => {
         );
 
         if (isLoginMode) {
-          // Simulate redirect after successful login
-          setTimeout(() => {
-            navigate('/AccurateTrackingV3'); // Redirect to tracking page
-          }, 2000);
+          setTimeout(() => navigate('/AccurateTrackingV3'), 2000);
         } else {
-          // Switch to login mode after registration
           setTimeout(() => {
-            setIsLoginMode(true); // Toggle to login mode
-            setSuccessMessage(''); // Clear success message after switching
+            setIsLoginMode(true);
+            setSuccessMessage('');
           }, 2000);
         }
       } else {
@@ -63,57 +67,7 @@ const AuthenticationPage = () => {
     } catch (err) {
       setError('Something went wrong. Please try again.');
     }
-
-
   };
-
-  // Function to fetch the JWT token from localStorage
-  const getToken = () => localStorage.getItem('authToken');
-
-  
- // Function to save emission data to the backend
-const saveEmissionData = async (emissionType, emissionValue, badge) => {
-  const token = getToken(); // Retrieve the JWT token
-
-  if (!token) {
-    console.error('No token found. Please log in again.');
-    setError('Session expired. Please log in again.');
-    return;
-  }
-
-  try {
-    const response = await fetch('http://localhost:5000/api/storeEmissions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`, // Send token as Authorization header
-      },
-      body: JSON.stringify({
-        emissionType,
-        emissionValue,
-        badge,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      console.log('Emission data saved:', result);
-    } else {
-      console.error('Error saving emission data:', result.error);
-      setError(result.error || 'Failed to save emission data.');
-    }
-  } catch (error) {
-    console.error('Error saving emission data:', error);
-    setError('Failed to save emission data.');
-  }
-};
-
-
-
-
-  
-
 
   return (
     <div
@@ -135,10 +89,10 @@ const saveEmissionData = async (emissionType, emissionValue, badge) => {
                   <Link to="/" className="hover:text-green-400 cursor-pointer">Home</Link>
                 </li>
                 <li>
-                  <Link to = '/AboutUs' className="hover:text-green-400 cursor-pointer">About</Link>
+                  <Link to="/AboutUs" className="hover:text-green-400 cursor-pointer">About</Link>
                 </li>
                 <li>
-                <Link to="/contact_us" className='hover:text-green-400 cursor-pointer'>Contact Us</Link>
+                  <Link to="/contact_us" className="hover:text-green-400 cursor-pointer">Contact Us</Link>
                 </li>
               </ul>
             </nav>
@@ -146,37 +100,66 @@ const saveEmissionData = async (emissionType, emissionValue, badge) => {
         </header>
 
         <div className="flex justify-center items-center h-screen">
-          <form onSubmit={handleSubmit} className="bg-black opacity-70 p-10 rounded shadow-xl w-96 px-15">
-            <h2 className="text-2xl mb-4 text-white ">{isLoginMode ? 'Login' : 'Register'}</h2>
-            {error && <p className="text-red-500">{error}</p>}
-            {successMessage && <p className="text-green-800">{successMessage}</p>} {/* Display success message */}
-            <div className="mb-4">
-              <label className="block mb-2 text-white" htmlFor="email">Email</label>
+          <form onSubmit={handleSubmit} className="bg-black opacity-80 p-10 rounded shadow-xl w-128 px-15">
+            <h2 className="text-3xl mb-6 text-white font-bold text-center">
+              {isLoginMode ? 'Login' : 'Register'}
+            </h2>
+            {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+            {successMessage && <p className="text-green-500 mb-4 text-center">{successMessage}</p>}
+
+            {!isLoginMode && (
+              <div className="mb-6">
+                <label className="block mb-2 text-white font-medium" htmlFor="userName">Username</label>
+                <input
+                  type="text"
+                  id="userName"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  required
+                  className="border border-gray-500 p-3 rounded-lg w-[30rem]" // Increased width
+                />
+              </div>
+            )}
+            <div className="mb-6">
+              <label className="block mb-2 text-white font-medium" htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border border-gray-500 p-2 w-full"
+                className="border border-gray-500 p-3 rounded-lg w-[30rem]" // Increased width
               />
             </div>
-            <div className="mb-4">
-              <label className="block mb-2 text-white" htmlFor="password">Password</label>
+            <div className="mb-6">
+              <label className="block mb-2 text-white font-medium" htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="border border-gray-500 p-2 w-full"
+                className="border border-gray-500 p-3 rounded-lg w-[30rem]" // Increased width
               />
             </div>
-            <button type="submit" className="bg-black text-white p-2 rounded w-20 ">
+            {!isLoginMode && (
+              <div className="mb-6">
+                <label className="block mb-2 text-white font-medium" htmlFor="confirmPassword">Confirm Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="border border-gray-500 p-3 rounded-lg w-[30rem]" // Increased width
+                />
+              </div>
+            )}
+            <button type="submit" className="bg-green-600 text-white p-3 rounded-lg w-full font-medium">
               {isLoginMode ? 'Login' : 'Register'}
             </button>
-            <div className="mt-4">
-              <button type="button" onClick={() => setIsLoginMode(!isLoginMode)} className="text-white">
+            <div className="mt-6 text-center">
+              <button type="button" onClick={() => setIsLoginMode(!isLoginMode)} className="text-green-400 font-medium">
                 Switch to {isLoginMode ? 'Register' : 'Login'}
               </button>
             </div>
