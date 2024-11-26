@@ -7,7 +7,7 @@ const AuthenticationPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState(''); // Tracks the "user_name" field
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -29,16 +29,17 @@ const AuthenticationPage = () => {
     }
 
     try {
+      // Include "user_name" explicitly in the payload for registration
       const payload = isLoginMode
-        ? { username: email, password }
-        : { username: email, password, user_name: userName };
+        ? { username: email, password } // Login payload
+        : { user_name: userName, username: email, password }; // Registration payload
 
       const response = await fetch(
         isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(payload), // Send the payload to the backend
         }
       );
 
