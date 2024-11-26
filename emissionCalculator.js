@@ -42,7 +42,7 @@ app.post('/api/login', (req, res) => {
         return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const query = 'SELECT * FROM test_Users WHERE username = ?';
+    const query = 'SELECT * FROM users WHERE username = ?';
 
     db.query(query, [username], async (err, results) => {
         if (err) return res.status(500).json({ error: 'Database error' });
@@ -121,7 +121,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
 
     // Construct the final SQL query
     const query = `
-        UPDATE test_Users
+        UPDATE users
         SET ${updates.join(', ')}
         WHERE id = ?
     `;
@@ -183,7 +183,7 @@ app.post('/api/register', async (req, res) => {
 
         db.query(
             // Query now distinguishes between username (email) and user_name (actual name)
-            'INSERT INTO test_Users (user_name, username, password) VALUES (?, ?, ?)',
+            'INSERT INTO users (user_name, username, password) VALUES (?, ?, ?)',
             [user_name, username, hashedPassword], // Pass user_name, username, and hashed password
             (err, result) => {
                 if (err) {
@@ -242,7 +242,7 @@ app.get('/api/userProfile', authMiddleware, (req, res) => {
             bike_badge,
             home_badge,
             user_name
-        FROM test_Users 
+        FROM users 
         WHERE id = ?
     `;
 
