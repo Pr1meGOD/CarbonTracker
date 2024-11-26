@@ -234,7 +234,7 @@ app.get('/api/userProfile', authMiddleware, (req, res) => {
     // SQL query to fetch user profile data
     const query = `
         SELECT 
-            Username,  
+            User_name,  
             car_emissions, 
             bike_emissions, 
             household_emissions,
