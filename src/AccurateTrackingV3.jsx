@@ -180,24 +180,7 @@ const AccurateTrackingV3 = () => {
     
     
    
-      fetch('/api/storeEmissions', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`, // Replace with actual token logic
-          },
-          body: JSON.stringify(emissionValue), // Replace with actual emission data
-      })
-          .then((response) => response.json())
-          .then((data) => {
-              if (data.hasTrackedEmissions) {
-                  localStorage.setItem('hasTrackedEmissions', 'true');
-              }
-          })
-          .catch((error) => {
-              console.error('Error tracking emissions:', error);
-          });
-  };
+      };
   
       // Show improvement tips based on badge
       setShowImprovementTip((prevTips) => ({
