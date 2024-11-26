@@ -118,7 +118,7 @@ const UserProfile = () => {
           {/* Welcome Section */}
           <header className="mb-8">
             <h1 className="text-4xl font-bold text-green-400">
-              Welcome, {user?.email || "User"}!
+              Welcome, {user?.user_name || "User"}!
             </h1>
             <p className="text-lg text-gray-300 mt-2">
               Here's a summary of your most recent emissions data.
