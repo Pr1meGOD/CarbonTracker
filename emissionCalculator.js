@@ -12,81 +12,61 @@ const secretKey = '1234';
 app.use(cors());
 app.use(express.json());
 
+function authMiddleware(req, res, next) {
+    const token = req.header('Authorization')?.split(' ')[1];  
+    console.log('Received token:', token);  
 
-const authMiddleware = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: 'Unauthorized: Missing token.' });
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized: No token provided.' });
     }
-  
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, 1234, (err, user) => {
-      if (err) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
-      }
-      req.user = user; // Attach user information to the request object
-      next();
-    });
-  };
 
-module.exports = authMiddleware; // Make sure to export your middleware if needed
+    jwt.verify(token, '1234', (err, decoded) => {
+        if (err) {
+            console.error('Token verification error:', err);
+            return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
+        }
+
+        req.user = decoded;
+        next();
+    });
+}
+
 
 
 
 // Login Route: Verifies user credentials and returns a JWT token
-app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body; // Accept `email` and `password` from the frontend
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required' });
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    try {
-        const query = 'SELECT * FROM test_Users WHERE username = ?'; // Search by `username` (email)
+    const query = 'SELECT * FROM test_Users WHERE username = ?';
 
-        db.query(query, [email], async (err, results) => {
-            if (err) {
-                console.error('Database query error:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
+    db.query(query, [username], async (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
 
-            if (results.length === 0) {
-                return res.status(404).json({ error: 'User not found' });
-            }
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-            const user = results[0];
+        const user = results[0];
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
-            try {
-                const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid password' });
+        }
 
-                if (!isPasswordValid) {
-                    return res.status(401).json({ error: 'Invalid password' });
-                }
+        // Generate JWT Token
+        const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '3h' });
 
-                const token = jwt.sign(
-                    { userId: user.id, userName: user.username },
-                    secretKey,
-                    { expiresIn: '100d' }
-                );
-
-                res.status(200).json({
-                    message: 'Login successful',
-                    token,
-                });
-            } catch (bcryptError) {
-                console.error('Password comparison error:', bcryptError);
-                return res.status(500).json({ error: 'Error processing password validation' });
-            }
+        res.status(200).json({
+            message: 'Login successful',
+            token,
         });
-    } catch (error) {
-        console.error('Unexpected server error:', error);
-        return res.status(500).json({ error: 'Server error. Please try again later.' });
-    }
+    });
 });
-
-
-
-
 
 
 
@@ -100,7 +80,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         car_Badge,
         bike_Badge,
         home_Badge,
-        emissionComments,
+        emissionComments, // New field
     } = req.body;
 
     // Check if user information is extracted properly from the JWT
@@ -116,7 +96,8 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         { key: 'household_emissions', value: householdEmissions },
         { key: 'car_badge', value: car_Badge },
         { key: 'bike_badge', value: bike_Badge },
-        { key: 'home_badge', value: home_Badge }
+        { key: 'home_badge', value: home_Badge },
+        { key: 'emission_comments', value: emissionComments }, // Added mapping
     ];
 
     const updates = [];
@@ -176,53 +157,56 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
 
 // User Registration Route
 app.post('/api/register', async (req, res) => {
-    let { email, user_name, password } = req.body; // Updated to include user_name
+    let { username, password } = req.body;
 
-    if (!email || !user_name || !password) {
-        return res.status(400).json({ error: 'Email, username, and password are required' });
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    email = email.trim();
-    user_name = user_name.trim();
+    // Sanitize inputs
+    username = username.trim();
     password = password.trim();
 
-    if (!validator.isEmail(email)) {
+    // Validate email
+    if (!validator.isEmail(username)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
+    // Validate password strength (e.g., minimum length of 6 characters)
     if (password.length < 6) {
         return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
-        const query = 'INSERT INTO test_Users (username, user_name, password) VALUES (?, ?, ?)';
-
-        db.query(query, [email, user_name, hashedPassword], (err, result) => {
-            if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(400).json({ error: 'Email already exists' });
+        db.query(
+            'INSERT INTO test_Users (username, password) VALUES (?, ?)',
+            [username, hashedPassword],
+            (err, result) => {
+                if (err) {
+                    if (err.code === 'ER_DUP_ENTRY') {
+                        return res.status(400).json({ error: 'Username already exists' });
+                    }
+                    return res.status(500).json({ error: err.message });
                 }
-                return res.status(500).json({ error: 'Database error' });
-            }
 
-            res.status(201).json({ message: 'User registered successfully' });
-        });
+                res.status(201).json({ message: 'User registered successfully' });
+            }
+        );
     } catch (err) {
-        console.error('Error during registration:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
 
-
 // Configure MySQL Connection
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'atharva@2212',
-    database: 'sem3_project',
+    host: 'localhost',    
+    user: 'root',         
+    password: 'atharva@2212', 
+    database: 'sem3_project', 
 });
+
 
 db.getConnection((err) => {
     if (err) {
@@ -231,10 +215,6 @@ db.getConnection((err) => {
     }
     console.log('Database connected successfully.');
 });
-
-
-
-
 
 
 app.get('/api/userProfile', authMiddleware, (req, res) => {
