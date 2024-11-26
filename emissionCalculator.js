@@ -217,6 +217,10 @@ db.getConnection((err) => {
 });
 
 
+
+
+
+
 app.get('/api/userProfile', authMiddleware, (req, res) => {
     // Extract user ID from the authenticated request
     const userId = req.user?.userId;
