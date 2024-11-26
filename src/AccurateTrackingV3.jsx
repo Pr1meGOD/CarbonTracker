@@ -29,8 +29,6 @@ const AccurateTrackingV3 = () => {
   });
   const navigate = useNavigate();
 
-
-
   // Ensure user is logged in using JWT
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -54,63 +52,31 @@ const AccurateTrackingV3 = () => {
 
   async function saveEmissions(dataToSave) {
     try {
-      // Retrieve the token from localStorage
       const token = localStorage.getItem("authToken");
       if (!token) {
-        console.error("No authentication token found. Ensure the user is logged in.");
+        console.error("No authentication token found.");
         return;
       }
-  
-      // Send the POST request to the backend
+
       const response = await fetch("http://localhost:5000/api/storeEmissions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Attach the token properly
+          Authorization: `Bearer ${token}`, // Send the token as a Bearer token
         },
-        body: JSON.stringify(dataToSave), // Send the emission data
+        body: JSON.stringify(dataToSave),
       });
-  
-      // Handle the response
+
       const result = await response.json();
       if (response.ok) {
         console.log("Emission data saved successfully:", result.message);
       } else {
-        if (result.error && result.error.includes('Unauthorized')) {
-          console.error("Token has expired. Please log in again.");
-          // Optionally, you can add logic to refresh the token or redirect to the login page
-        } else {
-          console.error("Failed to save emission data:", result.error || result);
-        }
+        console.error("Failed to save emission data:", result.error);
       }
     } catch (error) {
       console.error("Error while saving emissions:", error);
     }
   }
-
-  async function handleLogin(email, password) {
-    try {
-      const response = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-  
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem("authToken", data.token);
-        console.log("Login successful, token stored.");
-      } else {
-        console.error("Login failed:", data.error);
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-    }
-  }
-  
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -202,21 +168,36 @@ const AccurateTrackingV3 = () => {
         }));
     
         if (emissionValue !== undefined && emissionValue !== null) {
-          dataToSave = {
-            householdEmissions: emissionValue,  // Using the fetched emission value
-            home_Badge: badge,  // Using the fetched badge
-          };
+            dataToSave = {
+              householdEmissions: emissionValue,  // Using the fetched emission value
+              home_Badge: badge,  // Using the fetched badge
+            };
     
-          await saveEmissions(dataToSave);
+            await saveEmissions(dataToSave);
         } else {
-          console.error("Error: Household emission value is missing or invalid.");
+            console.error("Error: Household emission value is missing or invalid.");
         }
-      
-
     
+    
+   
+      fetch('/api/storeEmissions', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`, // Replace with actual token logic
+          },
+          body: JSON.stringify(emissionValue), // Replace with actual emission data
+      })
+          .then((response) => response.json())
+          .then((data) => {
+              if (data.hasTrackedEmissions) {
+                  localStorage.setItem('hasTrackedEmissions', 'true');
+              }
+          })
+          .catch((error) => {
+              console.error('Error tracking emissions:', error);
+          });
   };
-
-  
   
       // Show improvement tips based on badge
       setShowImprovementTip((prevTips) => ({

@@ -1,58 +1,44 @@
-import React, { useState } from 'react';
+import React ,{ useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import bg from "./assets/Images/home_page_bg.jpg";
 import { Leaf } from 'lucide-react';
+import axios from 'axios'; 
 
 const AuthenticationPage = () => {
   const [email, setEmail] = useState('');
-  const [user_name, setUser_name] = useState(''); // Updated to use user_name
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // State for confirm password
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState(''); // State for success message
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
 
-    if (isLoginMode) {
-      if (!email || !password) {
-        setError('Please fill in all fields.');
-        return;
-      }
-    } else {
-      if (!email || !user_name || !password || !confirmPassword) {
-        setError('Please fill in all fields.');
-        return;
-      }
-      if (password !== confirmPassword) {
-        setError('Passwords do not match.');
-        return;
-      }
+    // Input validation to check if email and password fields are filled
+    if (!email || !password) {
+      setError('Please fill in all fields.');
+      return;
     }
 
     try {
       const response = await fetch(
-        isLoginMode
-          ? 'http://localhost:5000/api/login'
-          : 'http://localhost:5000/api/register',
+        isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(
-            isLoginMode
-              ? { email, password } // For login, send email and password only
-              : { email, user_name, password } // For registration, send email, user_name, and password
-          ),
+          body: JSON.stringify({ username: email, password }), // Match backend field names
         }
       );
 
       const data = await response.json();
 
       if (response.ok) {
+        // Save JWT token to localStorage
+        localStorage.setItem('authToken', data.token);
+
         setSuccessMessage(
           isLoginMode
             ? 'Login successful! Redirecting to the tracking page...'
@@ -60,13 +46,15 @@ const AuthenticationPage = () => {
         );
 
         if (isLoginMode) {
+          // Simulate redirect after successful login
           setTimeout(() => {
-            navigate('/AccurateTrackingV3'); // Navigate to another page after successful login
+            navigate('/AccurateTrackingV3'); // Redirect to tracking page
           }, 2000);
         } else {
+          // Switch to login mode after registration
           setTimeout(() => {
-            setIsLoginMode(true);
-            setSuccessMessage('');
+            setIsLoginMode(true); // Toggle to login mode
+            setSuccessMessage(''); // Clear success message after switching
           }, 2000);
         }
       } else {
@@ -75,7 +63,56 @@ const AuthenticationPage = () => {
     } catch (err) {
       setError('Something went wrong. Please try again.');
     }
+
+
   };
+
+  // Function to fetch the JWT token from localStorage
+  const getToken = () => localStorage.getItem('authToken');
+
+  
+ // Function to save emission data to the backend
+const saveEmissionData = async (emissionType, emissionValue, badge) => {
+  const token = getToken(); // Retrieve the JWT token
+
+  if (!token) {
+    console.error('No token found. Please log in again.');
+    setError('Session expired. Please log in again.');
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:5000/api/storeEmissions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Send token as Authorization header
+      },
+      body: JSON.stringify({
+        emissionType,
+        emissionValue,
+        badge,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      console.log('Emission data saved:', result);
+    } else {
+      console.error('Error saving emission data:', result.error);
+      setError(result.error || 'Failed to save emission data.');
+    }
+  } catch (error) {
+    console.error('Error saving emission data:', error);
+    setError('Failed to save emission data.');
+  }
+};
+
+
+
+
+  
 
 
   return (
@@ -98,10 +135,10 @@ const AuthenticationPage = () => {
                   <Link to="/" className="hover:text-green-400 cursor-pointer">Home</Link>
                 </li>
                 <li>
-                  <Link to="/AboutUs" className="hover:text-green-400 cursor-pointer">About</Link>
+                  <Link to = '/AboutUs' className="hover:text-green-400 cursor-pointer">About</Link>
                 </li>
                 <li>
-                  <Link to="/contact_us" className="hover:text-green-400 cursor-pointer">Contact Us</Link>
+                <Link to="/contact_us" className='hover:text-green-400 cursor-pointer'>Contact Us</Link>
                 </li>
               </ul>
             </nav>
@@ -109,25 +146,10 @@ const AuthenticationPage = () => {
         </header>
 
         <div className="flex justify-center items-center h-screen">
-          <form onSubmit={handleSubmit} className="bg-black opacity-70 p-12 rounded shadow-xl w-[500px]">
-            <h2 className="text-2xl mb-4 text-white">{isLoginMode ? 'Login' : 'Register'}</h2>
+          <form onSubmit={handleSubmit} className="bg-black opacity-70 p-10 rounded shadow-xl w-96 px-15">
+            <h2 className="text-2xl mb-4 text-white ">{isLoginMode ? 'Login' : 'Register'}</h2>
             {error && <p className="text-red-500">{error}</p>}
-            {successMessage && <p className="text-green-800">{successMessage}</p>}
-            {!isLoginMode && (
-              <>
-                <div className="mb-4">
-                  <label className="block mb-2 text-white" htmlFor="user_name">Username</label>
-                  <input
-                    type="text"
-                    id="user_name"
-                    value={user_name}
-                    onChange={(e) => setUser_name(e.target.value)}
-                    required
-                    className="border border-gray-500 p-2 w-full"
-                  />
-                </div>
-              </>
-            )}
+            {successMessage && <p className="text-green-800">{successMessage}</p>} {/* Display success message */}
             <div className="mb-4">
               <label className="block mb-2 text-white" htmlFor="email">Email</label>
               <input
@@ -150,20 +172,7 @@ const AuthenticationPage = () => {
                 className="border border-gray-500 p-2 w-full"
               />
             </div>
-            {!isLoginMode && (
-              <div className="mb-4">
-                <label className="block mb-2 text-white" htmlFor="confirmPassword">Confirm Password</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="border border-gray-500 p-2 w-full"
-                />
-              </div>
-            )}
-            <button type="submit" className="bg-black text-white p-2 rounded w-full mt-4">
+            <button type="submit" className="bg-black text-white p-2 rounded w-20 ">
               {isLoginMode ? 'Login' : 'Register'}
             </button>
             <div className="mt-4">
