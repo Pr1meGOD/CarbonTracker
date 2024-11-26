@@ -54,6 +54,11 @@ const AuthenticationPage = () => {
             : 'Registration successful! Switching to login...'
         );
 
+        // Add an alert for successful registration
+      if (!isLoginMode) {
+        alert('Registration Successful!');
+      }
+
         if (isLoginMode) {
           setTimeout(() => navigate('/AccurateTrackingV3'), 2000);
         } else {
