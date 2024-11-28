@@ -29,11 +29,11 @@ const AccurateTrackingV3 = () => {
   });
   const navigate = useNavigate();
 
-  // Ensure user is logged in using JWT
+  
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
-      navigate("/AuthenticationPage"); // Redirect to login if no token found
+      navigate("/AuthenticationPage"); 
     }
   }, [navigate]);
 
@@ -45,7 +45,7 @@ const AccurateTrackingV3 = () => {
     }));
   };
 
-  // Function to redirect to tips page
+  
   const handleRedirectToTips = () => {
     navigate('/CarbonReductionTips');
   };
@@ -62,7 +62,7 @@ const AccurateTrackingV3 = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Send the token as a Bearer token
+          Authorization: `Bearer ${token}`, 
         },
         body: JSON.stringify(dataToSave),
       });
@@ -92,7 +92,7 @@ const AccurateTrackingV3 = () => {
       const headers = { Authorization: `Bearer ${token}` };
       let badge, emissionValue;
 
-      // Depending on the active category, we calculate and send the corresponding data
+      
       let dataToSave = {};
 
       if (activeCategory === "bike") {
@@ -102,7 +102,7 @@ const AccurateTrackingV3 = () => {
           { headers }
         );
         badge = response.data.badge;
-        emissionValue = response.data.bikeEmission; // Assuming response.data.bikeEmission is the correct field
+        emissionValue = response.data.bikeEmission; 
 
         setResults((prevResults) => ({
           ...prevResults,
@@ -113,8 +113,8 @@ const AccurateTrackingV3 = () => {
         }));
 
         dataToSave = {
-          bikeEmissions: emissionValue, // Using the fetched emission value
-          bike_Badge: badge, // Using the fetched badge
+          bikeEmissions: emissionValue, 
+          bike_Badge: badge, 
         };
 
         await saveEmissions(dataToSave);
@@ -126,7 +126,7 @@ const AccurateTrackingV3 = () => {
           { headers }
         );
         badge = response.data.badge;
-        emissionValue = response.data.carEmission; // Assuming response.data.carEmission is the correct field
+        emissionValue = response.data.carEmission; 
 
         setResults((prevResults) => ({
           ...prevResults,
@@ -137,8 +137,8 @@ const AccurateTrackingV3 = () => {
         }));
 
         dataToSave = {
-          carEmissions: emissionValue, // Using the fetched emission value
-          car_Badge: badge, // Using the fetched badge
+          carEmissions: emissionValue, 
+          car_Badge: badge, 
         };
 
         await saveEmissions(dataToSave);
@@ -154,9 +154,9 @@ const AccurateTrackingV3 = () => {
         );
         
         badge = response.data.badge;
-        emissionValue = response.data.homeEmission; // Assuming response.data.homeEmission is the correct field
+        emissionValue = response.data.homeEmission; 
     
-        // Log the emission value to verify if it's being calculated correctly
+        
         console.log("Home Emission Value:", emissionValue);
     
         setResults((prevResults) => ({
@@ -169,8 +169,8 @@ const AccurateTrackingV3 = () => {
     
         if (emissionValue !== undefined && emissionValue !== null) {
             dataToSave = {
-              householdEmissions: emissionValue,  // Using the fetched emission value
-              home_Badge: badge,  // Using the fetched badge
+              householdEmissions: emissionValue,  
+              home_Badge: badge,  
             };
     
             await saveEmissions(dataToSave);
@@ -182,7 +182,7 @@ const AccurateTrackingV3 = () => {
    
       };
   
-      // Show improvement tips based on badge
+      
       setShowImprovementTip((prevTips) => ({
         ...prevTips,
         [activeCategory]: ["B", "C", "F"].includes(badge),
