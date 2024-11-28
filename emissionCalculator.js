@@ -103,7 +103,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     const updates = [];
     const values = [];
 
-    // Iterate through valid fields and prepare the query updates
+    
     validFields.forEach((field) => {
         if (field.value !== undefined) {
             updates.push(`${field.key} = ?`);
@@ -111,30 +111,30 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         }
     });
 
-    // Include the automatic update of the last_calculated_date column
+    
     updates.push('calculation_date = NOW()');
 
-    // Check if there are fields to update (excluding only calculation_date)
+    
     if (updates.length === 1) {
         return res.status(400).json({ error: 'No valid data to update.' });
     }
 
-    // Construct the final SQL query
+    
     const query = `
         UPDATE users
         SET ${updates.join(', ')}
         WHERE id = ?
     `;
-    values.push(userId); // Add userId to the values array for WHERE condition
+    values.push(userId); 
 
-    // Execute the query with the prepared values
+    
     db.query(query, values, (err, result) => {
         if (err) {
             console.error('Error updating database:', err);
             return res.status(500).json({ error: 'Failed to save emission data.' });
         }
 
-        // Handle case where the user ID does not exist in the database
+        
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -142,7 +142,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         // Successfully updated the emission data
         res.status(200).json({
             message: 'Emission data saved successfully.',
-            hasTrackedEmissions: true, // New flag indicating emissions have been tracked
+            hasTrackedEmissions: true, 
         });
     });
 });
@@ -155,9 +155,8 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
 
   
 
-// User Registration Route
 app.post('/api/register', async (req, res) => {
-    let { user_name, username, password } = req.body; // Accept user_name as a separate field
+    let { user_name, username, password } = req.body; 
 
     if (!user_name || !username || !password) {
         return res.status(400).json({ error: 'Name, email, and password are required' });
@@ -168,12 +167,12 @@ app.post('/api/register', async (req, res) => {
     username = username.trim();
     password = password.trim();
 
-    // Validate email
+  
     if (!validator.isEmail(username)) {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    // Validate password strength (e.g., minimum length of 6 characters)
+   
     if (password.length < 6) {
         return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
@@ -182,7 +181,7 @@ app.post('/api/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
         db.query(
-            // Query now distinguishes between username (email) and user_name (actual name)
+           
             'INSERT INTO users (user_name, username, password) VALUES (?, ?, ?)',
             [user_name, username, hashedPassword], // Pass user_name, username, and hashed password
             (err, result) => {
