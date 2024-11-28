@@ -7,7 +7,7 @@ const AuthenticationPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [userName, setUserName] = useState(''); // Tracks the "user_name" field
+  const [userName, setUserName] = useState(''); 
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -29,17 +29,17 @@ const AuthenticationPage = () => {
     }
 
     try {
-      // Include "user_name" explicitly in the payload for registration
+      
       const payload = isLoginMode
-        ? { username: email, password } // Login payload
-        : { user_name: userName, username: email, password }; // Registration payload
+        ? { username: email, password } 
+        : { user_name: userName, username: email, password }; 
 
       const response = await fetch(
         isLoginMode ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload), // Send the payload to the backend
+          body: JSON.stringify(payload), 
         }
       );
 
@@ -54,7 +54,7 @@ const AuthenticationPage = () => {
             : 'Registration successful! Switching to login...'
         );
 
-        // Add an alert for successful registration
+       
       if (!isLoginMode) {
         alert('Registration Successful!');
       }
@@ -122,7 +122,7 @@ const AuthenticationPage = () => {
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                   required
-                  className="border border-gray-500 p-3 rounded-lg w-[30rem]" // Increased width
+                  className="border border-gray-500 p-3 rounded-lg w-[30rem]" 
                 />
               </div>
             )}
@@ -134,7 +134,7 @@ const AuthenticationPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border border-gray-500 p-3 rounded-lg w-[30rem]" // Increased width
+                className="border border-gray-500 p-3 rounded-lg w-[30rem]" 
               />
             </div>
             <div className="mb-6">
@@ -145,7 +145,7 @@ const AuthenticationPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="border border-gray-500 p-3 rounded-lg w-[30rem]" // Increased width
+                className="border border-gray-500 p-3 rounded-lg w-[30rem]" 
               />
             </div>
             {!isLoginMode && (
@@ -157,7 +157,7 @@ const AuthenticationPage = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="border border-gray-500 p-3 rounded-lg w-[30rem]" // Increased width
+                  className="border border-gray-500 p-3 rounded-lg w-[30rem]" 
                 />
               </div>
             )}
