@@ -7,9 +7,9 @@ import bg from "./assets/Images/home_page_bg.jpg";
 const UserProfile = () => {
   const [user, setUser] = useState(null);
 
-  // Function to fetch user data and render it on the profile page
+  
   const loadUserProfile = async () => {
-    const token = localStorage.getItem("authToken"); // Assuming token is stored in localStorage
+    const token = localStorage.getItem("authToken"); 
     if (!token) {
       alert("You are not logged in.");
       return;
@@ -32,7 +32,7 @@ const UserProfile = () => {
       const userData = await response.json();
       setUser(userData);
 
-      // Populate the profile table with user data
+      
       const profileTable = document.getElementById("user-profile-table");
       if (profileTable) {
         profileTable.innerHTML = `
