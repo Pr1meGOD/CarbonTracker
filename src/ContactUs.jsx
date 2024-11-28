@@ -24,9 +24,6 @@ function ContactUs() {
                   <Link to="/" className="hover:text-green-400 cursor-pointer">Home</Link>
                 </li>
                 <li>
-                  <Link to="/auth" className="hover:text-green-400 cursor-pointer">Register / Login</Link>
-                </li>
-                <li>
                   <Link to = '/AboutUs' className="hover:text-green-400 cursor-pointer">About</Link>
                 </li>
                 <li>
