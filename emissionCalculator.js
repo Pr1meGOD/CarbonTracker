@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const mysql = require('mysql2'); // Added MySQL
-const bcrypt = require('bcrypt'); // For password hashing
+const mysql = require('mysql2'); 
+const bcrypt = require('bcrypt'); 
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const PORT = process.env.PORT || 5000;
@@ -34,7 +34,7 @@ function authMiddleware(req, res, next) {
 
 
 
-// Login Route: Verifies user credentials and returns a JWT token
+
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -58,7 +58,7 @@ app.post('/api/login', (req, res) => {
             return res.status(401).json({ error: 'Invalid password' });
         }
 
-        // Generate JWT Token
+      
         const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '3h' });
 
         res.status(200).json({
@@ -71,7 +71,6 @@ app.post('/api/login', (req, res) => {
 
 
 
-// Route to handle storing emissions
 app.post('/api/storeEmissions', authMiddleware, (req, res) => {
     const {
         carEmissions,
@@ -80,16 +79,16 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         car_Badge,
         bike_Badge,
         home_Badge,
-        emissionComments, // New field
+        emissionComments, 
     } = req.body;
 
-    // Check if user information is extracted properly from the JWT
+    
     if (!req.user || !req.user.userId) {
         return res.status(401).json({ error: 'Unauthorized: Invalid or missing user information.' });
     }
     const userId = req.user.userId;
 
-    // Map valid input fields to database column names
+    
     const validFields = [
         { key: 'car_emissions', value: carEmissions },
         { key: 'bike_emissions', value: bikeEmissions },
@@ -97,7 +96,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
         { key: 'car_badge', value: car_Badge },
         { key: 'bike_badge', value: bike_Badge },
         { key: 'home_badge', value: home_Badge },
-        { key: 'emission_comments', value: emissionComments }, // Added mapping
+        { key: 'emission_comments', value: emissionComments }, 
     ];
 
     const updates = [];
@@ -139,7 +138,7 @@ app.post('/api/storeEmissions', authMiddleware, (req, res) => {
             return res.status(404).json({ error: 'User not found.' });
         }
 
-        // Successfully updated the emission data
+        
         res.status(200).json({
             message: 'Emission data saved successfully.',
             hasTrackedEmissions: true, 
@@ -162,7 +161,7 @@ app.post('/api/register', async (req, res) => {
         return res.status(400).json({ error: 'Name, email, and password are required' });
     }
 
-    // Sanitize inputs
+    
     user_name = user_name.trim();
     username = username.trim();
     password = password.trim();
@@ -178,7 +177,7 @@ app.post('/api/register', async (req, res) => {
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10); 
 
         db.query(
            
@@ -200,7 +199,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// Configure MySQL Connection
+
 const db = mysql.createPool({
     host: 'localhost',    
     user: 'root',         
@@ -222,15 +221,15 @@ db.getConnection((err) => {
 
 
 app.get('/api/userProfile', authMiddleware, (req, res) => {
-    // Extract user ID from the authenticated request
+   
     const userId = req.user?.userId;
 
-    // Validate that userId exists
+    
     if (!userId) {
         return res.status(400).json({ error: 'User ID is missing or invalid.' });
     }
 
-    // SQL query to fetch user profile data
+    
     const query = `
         SELECT 
             Username,  
@@ -245,20 +244,20 @@ app.get('/api/userProfile', authMiddleware, (req, res) => {
         WHERE id = ?
     `;
 
-    // Execute the database query
+    
     db.query(query, [userId], (err, results) => {
         if (err) {
             console.error('Error fetching user data:', err.message);
             return res.status(500).json({ error: 'Internal server error. Please try again later.' });
         }
 
-        // Check if user was found
+        
         if (!results || results.length === 0) {
             return res.status(404).json({ error: 'User not found. Please check the user ID.' });
         }
 
-        // Return user profile data
-        const userData = results[0]; // Extract the first result
+        
+        const userData = results[0]; 
         return res.status(200).json(userData);
     });
 });
@@ -266,7 +265,7 @@ app.get('/api/userProfile', authMiddleware, (req, res) => {
 
 
 
-// Function to calculate emissions for bike, car, and home
+
 function calculateBikeEmission(cc, monthlyMileage) {
     let emissionFactor;
     if (cc <= 125) emissionFactor = 83.19;
@@ -292,8 +291,8 @@ function calculateCarEmission(carMileage, carFuelType) {
             factor = 0.00013;
             break;
         case 'petrol+cng':
-            factor = (parseFloat(0.000404) + parseFloat(0.0002)) / 2;  //(can use either of the calculation formula of the below 2)
-           // factor = 0.000404 + 0.0002 / 2; 
+            factor = (parseFloat(0.000404) + parseFloat(0.0002)) / 2;  
+           
             break;
         default:
             factor = 0;
@@ -316,7 +315,7 @@ function getBadge(emission) {
     return 'F';
 }
 
-// Endpoint to calculate bike emissions (unchanged)
+
 app.post('/api/calculateBikeEmission', (req, res) => {
     const { cc, monthlyMileage } = req.body;
 
@@ -330,7 +329,7 @@ app.post('/api/calculateBikeEmission', (req, res) => {
     res.json({ bikeEmission, badge });
 });
 
-// Endpoint to calculate car emissions (unchanged)
+
 app.post('/api/calculateCarEmission', (req, res) => {
     const { carMileage, carFuelType } = req.body;
 
@@ -344,7 +343,7 @@ app.post('/api/calculateCarEmission', (req, res) => {
     res.json({ carEmission, badge });
 });
 
-// Endpoint to calculate home emissions (unchanged)
+
 app.post('/api/calculateHomeEmission', (req, res) => {
     const { electricityUsage, heatingUsage } = req.body;
 
@@ -360,7 +359,6 @@ app.post('/api/calculateHomeEmission', (req, res) => {
 
 
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
